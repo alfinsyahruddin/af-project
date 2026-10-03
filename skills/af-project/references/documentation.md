@@ -52,13 +52,7 @@ bun run dev
 \`\`\`
 
 ## Verification & Testing
-\`\`\`sh
-# Backend checks
-cargo fmt --check && cargo test && cargo clippy --all-targets --all-features --locked -- -D warnings
-
-# Frontend checks
-bun run check && bun run lint && bun run test:unit && bun run format:check && bun run test:e2e
-\`\`\`
+Choose checks based on the files and behavior changed. Run focused checks for the affected area; run the full suite when a change spans areas or focused checks do not give enough coverage. See the project workflow guide for available commands.
 
 ## License
 
@@ -100,7 +94,7 @@ Welcome to <Project Name>. This document establishes the core architectural prin
 4. **Svelte 5 Runes Only**: Strictly use \`$props\`, \`$state\`, \`$derived\`, and \`$effect\`. No legacy Svelte 3/4 syntax.
 5. **CSR Only**: Set \`export const ssr = false;\` in root \`+layout.ts\`. Never create server routes.
 6. **Zero-Egress E2E**: Playwright tests must mock all API endpoints and run against the frontend dev server only.
-7. **Commit Message Style**: Use concise natural language. Do NOT use Conventional Commit prefixes (`feat:`, `fix:`). Multiline commit messages with dashed list details are explicitly intended for multi-part changes.
+7. **Commit Message Style**: When a commit is authorized, use concise natural language. Do NOT use Conventional Commit prefixes (`feat:`, `fix:`). Multiline commit messages with dashed list details are explicitly intended for multi-part changes. This style guidance does not authorize creating a commit.
 8. **Append-Only Migrations**: Never modify or reorder migrations that have already run. Always create a new sequential file under `backend/migrations/`.
 9. **No `@layer components` for Views**: Never use Tailwind `@layer components` or global `@apply` abstractions for feature- or page-specific styling. Colocate styles directly in Svelte components with utility classes or scoped `<style>` blocks.
 
@@ -108,14 +102,8 @@ Welcome to <Project Name>. This document establishes the core architectural prin
 
 ## 3. Verification Checklist
 
-Before completing any task, run:
-\`\`\`sh
-# Backend
-cd backend && cargo fmt --check && cargo test && cargo clippy --all-targets --all-features --locked -- -D warnings
-
-# Frontend
-cd frontend && bun run check && bun run lint && bun run test:unit && bun run format:check
-\`\`\`
+Choose checks based on the files and behavior changed. Run focused checks for the affected area; run the full suite when the change spans areas or focused checks do not give enough coverage. Report the commands run and their results, and distinguish failures caused by the change from unrelated or baseline failures. An uncommitted working tree is a valid handoff when the changes are reviewable and unrelated user changes are preserved.
+Commit message style does not authorize creating a commit; commit only when the user has authorized it.
 ```
 
 ---
@@ -131,4 +119,4 @@ cd frontend && bun run check && bun run lint && bun run test:unit && bun run for
 - `docs/testing.md`: Testing guidelines, mock fixture setups, and contract validation.
 - `docs/workflow.md`: Contributor git workflows, migration verification steps, and release tagging.
 
-Always update documentation in the same commit whenever an invariant, endpoint, or environment variable changes.
+When committing a change to an invariant, endpoint, or environment variable, update its documentation in that commit.

@@ -128,10 +128,13 @@ Phase 5: Baseline Verification ◄── Phase 4: Environment & Infra ◄──�
 > [!TIP]
 > Always verify that the empty shell compiles, lints, and starts before writing business logic.
 
-1. Start backing services:
+Choose checks for the platform and components scaffolded. For this standard backend-and-frontend stack, run the applicable backend and frontend baseline checks below. Do not start optional services or run checks for components that are not part of the setup. For later tasks, use the proportional verification guidance in [Workflow & Verification](workflow.md).
+
+1. Start only the backing services required by the scaffold (Redis is optional unless the app uses it):
    ```sh
-   docker compose up postgres redis -d
+   docker compose up postgres -d
    ```
+   If Redis is configured and needed, start it with `docker compose up redis -d`.
 2. Run backend checks:
    ```sh
    cd backend && cargo fmt --check && cargo test && cargo clippy --all-targets --all-features --locked -- -D warnings
@@ -140,4 +143,4 @@ Phase 5: Baseline Verification ◄── Phase 4: Environment & Infra ◄──�
    ```sh
    cd frontend && bun run check && bun run lint && bun run test:unit && bun run format:check
    ```
-4. Create the initial repository baseline commit using natural language (multiline with dashed list details is explicitly supported).
+4. Review the changed files and working tree. An initial commit is optional and requires the user's authorization; the commit message examples in [Workflow & Verification](workflow.md) specify style, not permission to commit.

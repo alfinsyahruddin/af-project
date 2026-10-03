@@ -26,7 +26,7 @@ When creating or modifying code under this guideline, agents and contributors mu
 4. **Svelte 5 Runes Only**: All frontend components must use modern Svelte 5 Runes (`$props`, `$state`, `$derived`, `$effect`). Never generate legacy Svelte 3/4 syntax (`export let`, `$:`, `on:click`).
 5. **Pure CSR Mode**: The web frontend is strictly a single-page application (`export const ssr = false;` in root `+layout.ts`). Never create server routes (`+page.server.ts` or `+server.ts`).
 6. **Zero-Egress E2E Tests**: Playwright browser tests run with only the frontend dev server. Every API request must be intercepted with mock fixtures; tests must fail fast on unmocked requests.
-7. **Natural Language Commits**: Write descriptive commit messages. Do NOT use Conventional Commit prefixes (`feat:`, `fix:`). Multiline commit messages with dashed bullet points are explicitly intended for multi-part changes.
+7. **Natural Language Commits**: When a commit is authorized, write a descriptive message. Do NOT use Conventional Commit prefixes (`feat:`, `fix:`). Multiline commit messages with dashed bullet points are explicitly intended for multi-part changes. Message style does not authorize creating a commit.
 8. **Append-Only Migrations**: Never modify or reorder migrations that have already been applied. Always create a new sequential file under `backend/migrations/` (e.g. `YYYYMMDDHHMM_description.sql`).
 9. **No `@layer components` for Feature Styling**: Never use Tailwind `@layer components` or global `@apply` abstractions for feature- or page-specific styling. Colocate styles directly in Svelte components using utility classes or scoped `<style>` blocks.
 
@@ -57,5 +57,5 @@ Find your current task and read only the relevant reference files:
 
 1. **Inspect Context**: Check repository manifests (`Cargo.toml`, `package.json`), existing tests, and contributor documentation.
 2. **Follow Boundaries**: Keep domain DTOs in `entities/`, queries in `repositories/`, logic in `services/`, and routes thin.
-3. **Execute Verification**: Always run the automated checks documented in [Workflow & Verification](references/workflow.md) before finishing.
+3. **Execute Verification**: Select and report checks appropriate to the changed area, following [Workflow & Verification](references/workflow.md). Distinguish failures caused by the change from unrelated or baseline failures.
 4. **Handoff Clearly**: Summarize implemented changes, tests run, and operational limits.

@@ -6,7 +6,9 @@ Follow these verification procedures, commands, and contributor workflows to ens
 
 ## 1. Automated Verification Commands
 
-Run the full verification suite before committing or completing any task:
+Choose verification based on the files and behavior changed. Run the smallest set of checks that gives useful coverage; run the full suite when a change spans multiple areas, affects shared foundations, or carries enough risk that focused checks are insufficient. A task does not require checks for untouched areas just because they are listed below.
+
+Inspect the project's scripts and existing verification setup before choosing checks. Report the exact commands run and their results. If a check fails, determine whether the failure is caused by the current change. Compare with the pre-change state when practical; otherwise describe the failure and evidence without labeling it pre-existing. Do not hide failures or attribute unrelated failures to the change.
 
 ### Backend Quality Gates
 Execute from `backend/`:
@@ -72,31 +74,28 @@ When modifying database schemas:
    ```sh
    sqlx migrate run
    ```
-3. **Compile-Time Embedding**: Remember that `sqlx::migrate!()` runs at compile-time in Rust. Ensure new SQL files are committed and present during `cargo check`, `cargo build`, and container image creation.
+3. **Compile-Time Embedding**: Remember that `sqlx::migrate!()` runs at compile-time in Rust. Ensure new SQL files are present during `cargo check`, `cargo build`, and container image creation. Commit them only when a commit is authorized.
 
 ---
 
-## 4. Pre-Handoff Quality Gate Checklist
+## 4. Pre-Handoff Review
 
-Before reporting a task complete or submitting a pull request, verify each gate:
+Before reporting a task complete or submitting a pull request:
 
 | Gate | Check | Expected Outcome |
 | :--- | :--- | :--- |
-| **Backend Formatting** | `cargo fmt --check` | Clean exit (0) |
-| **Backend Tests** | `cargo test` | All unit and contract tests pass |
-| **Backend Lints** | `cargo clippy ... -D warnings` | Zero warnings and zero errors |
-| **Frontend Types** | `bun run check` | 0 errors and 0 warnings |
-| **Frontend Lints** | `bun run lint` | Clean exit (0) |
-| **Frontend Unit Tests** | `bun run test:unit` | All Vitest suites pass |
-| **Frontend E2E Tests** | `bun run test:e2e` | All mocked journeys pass; no unmocked egress |
-| **Git Working Tree** | `git status` | Clean; no leftover scratch or temp files |
+| **Relevant checks** | Select applicable commands from the sections above | Checks cover the changed behavior; untouched areas need not be checked |
+| **Failures** | Record command, result, and attribution evidence | Failures caused by the change are distinguished from unrelated or baseline failures |
+| **Git review** | `git status --short` and inspect the diff | Intended changes are reviewable; unrelated user changes are preserved |
+
+An uncommitted working tree is a valid handoff. Do not require a clean tree or remove unrelated changes to complete a task. Summarize which changes remain uncommitted when relevant.
 
 ---
 
 ## 5. Contributor Handoff Standards
 
 > [!NOTE]
-> **Commit Message Guidelines**:
+> **Commit Message Style (when a commit is authorized)**:
 > - Use clear, descriptive natural language summaries in title or sentence case (e.g., `Add user profile settings endpoint and validation`).
 > - **Do NOT use Conventional Commit prefixes** (never use `feat:`, `fix:`, `chore:`).
 > - **Multiline list style is intended**: When a commit spans multiple distinct parts or changes, a multiline format (a concise summary title followed by a blank line and dashed bullet details) is explicitly intended and recommended.
@@ -117,8 +116,8 @@ Add user profile settings endpoint and validation
 - Add Playwright E2E journey test covering settings update
 ```
 
-When finishing an implementation task:
+Commit message examples and formatting guidance describe style only; they do not authorize creating a commit. Commit only when the user has asked for it or has already granted applicable authorization. When finishing an implementation task:
 1. **Summary of Changes**: Detail what was implemented, updated, or refactored.
-2. **Verification Statement**: List exactly which commands ran and succeeded.
+2. **Verification Statement**: List exactly which commands ran and their results, including relevant failures or checks not run.
 3. **Operational Limits**: Note any known edge cases, pending credentials, or remaining out-of-scope work.
 4. **Preserve User Changes**: Never discard unrelated files or modifications present in the working tree.
