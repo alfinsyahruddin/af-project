@@ -48,13 +48,21 @@ Enforce strict exclusion of environment files while explicitly preserving templa
 Configure Vite in `frontend/vite.config.ts` to allow the `PUBLIC_` prefix:
 
 ```ts
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
 	envPrefix: ['VITE_', 'PUBLIC_'],
-	plugins: [tailwindcss(), sveltekit()],
+	plugins: [
+		tailwindcss(),
+		sveltekit({
+			preprocess: vitePreprocess(),
+			adapter: adapter({ fallback: 'index.html' })
+		})
+	],
 	server: {
 		port: 3000
 	}
@@ -230,21 +238,6 @@ server {
 }
 ```
 
-### SvelteKit Static Adapter (`frontend/svelte.config.js`)
-Ensure `@sveltejs/adapter-static` builds the SPA to `build/` with `index.html` fallback:
+### SvelteKit 3 Static Adapter (`frontend/vite.config.ts`)
 
-```js
-import adapter from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
-const config = {
-	preprocess: vitePreprocess(),
-	kit: {
-		adapter: adapter({
-			fallback: 'index.html'
-		})
-	}
-};
-
-export default config;
-```
+Configure `@sveltejs/adapter-static` through the `sveltekit()` plugin in `vite.config.ts` to emit the SPA into `build/` with an `index.html` fallback. Use the complete Vite configuration above; SvelteKit 3 does not read `svelte.config.js`.

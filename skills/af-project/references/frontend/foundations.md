@@ -1,6 +1,6 @@
 # Frontend Foundations
 
-These core foundation modules establish the centralized API transport, Tailwind CSS v4 styling tokens, pure CSR shell, and static adapter configuration for SvelteKit web clients.
+These core foundation modules establish the centralized API transport, Tailwind CSS v4 styling tokens, pure CSR shell, and SvelteKit 3 static adapter configuration for web clients.
 
 > [!TIP]
 > Ready-to-use boilerplate templates for these foundation primitives are located in [`templates/frontend/`](../../templates/frontend/).
@@ -182,6 +182,7 @@ The web client operates strictly as a Single-Page Application (CSR only):
 ### `src/routes/+layout.ts`: Disable SSR Globally
 ```ts
 export const ssr = false;
+export const prerender = false;
 ```
 
 ### `src/routes/+layout.svelte`: Root Application Shell
@@ -189,7 +190,7 @@ export const ssr = false;
 <script lang="ts">
 	import '../app.css';
 	import type { Snippet } from 'svelte';
-	import ToastViewport from '$lib/components/ToastViewport.svelte';
+	import ToastViewport from '#lib/components/ToastViewport.svelte';
 
 	interface Props {
 		children: Snippet;
@@ -222,38 +223,82 @@ export const ssr = false;
 
 ---
 
-## 4. Build & Adapter Configuration
+## 4. SvelteKit 3 Build & Adapter Configuration
 
-### `svelte.config.js`: Static SPA Adapter
-```js
-import adapter from '@sveltejs/adapter-static';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+### `package.json`: Library Subpath Imports
 
-const config = {
-	preprocess: vitePreprocess(),
-	kit: {
-		adapter: adapter({
-			fallback: 'index.html'
-		})
+Declare the library directory with Node subpath imports:
+
+```json
+{
+	"imports": {
+		"#lib/*": "./src/lib/*"
 	}
-};
-
-export default config;
+}
 ```
 
-### `vite.config.ts`: Tailwind v4 & Environment Prefix
+Import TypeScript modules using their `.js` output extension (TypeScript and Vite resolve the corresponding `.ts` source), including rune modules such as `#lib/helpers/toast.svelte.js`. Keep `.svelte` for component imports, such as `#lib/components/ToastViewport.svelte`. SvelteKit 3 no longer generates the `$lib` alias.
+
+### `tsconfig.json`: SvelteKit TypeScript Configuration
+
+Extend `$app/tsconfig` and explicitly include source, tests, and tool configuration files:
+
+```json
+{
+	"extends": "$app/tsconfig",
+	"compilerOptions": {
+		"sourceMap": true,
+		"strict": true
+	},
+	"include": ["src", "tests", "*.ts", "*.js"],
+	"exclude": ["src/service-worker"]
+}
+```
+
+SvelteKit 3 reads its project configuration from the `sveltekit()` Vite plugin. A separate `svelte.config.js` is no longer supported. Pass the static adapter and Svelte preprocessing through the plugin options:
+
+### `vite.config.ts`: Static SPA Adapter, Tailwind v4 & Environment Prefix
 ```ts
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
 	envPrefix: ['VITE_', 'PUBLIC_'],
-	plugins: [tailwindcss(), sveltekit()],
+	plugins: [
+		tailwindcss(),
+		sveltekit({
+			preprocess: vitePreprocess(),
+			adapter: adapter({ fallback: 'index.html' })
+		})
+	],
 	server: {
 		port: 3000
 	}
 });
+```
+
+### `vitest.config.ts`: Kit 3 Component Tests
+
+Reuse the application Vite configuration so tests share its Kit 3 compiler and subpath import setup. The Svelte Testing Library plugin selects browser exports and cleans up mounted components between tests:
+
+```ts
+import { svelteTesting } from '@testing-library/svelte/vite';
+import { defineConfig, mergeConfig } from 'vitest/config';
+import viteConfig from './vite.config.js';
+
+export default mergeConfig(
+	viteConfig,
+	defineConfig({
+		plugins: [svelteTesting()],
+		test: {
+			environment: 'jsdom',
+			include: ['tests/unit/**/*.{test,spec}.ts']
+		}
+	})
+);
 ```
 
 ---

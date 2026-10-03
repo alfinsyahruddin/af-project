@@ -7,7 +7,7 @@ A reusable project guideline and agent skill for Alfin's personal software proje
 ## What's Included?
 
 - 🦀 **Backend Architecture**: Layered Rust API (Actix).
-- ⚡ **Frontend Architecture**: SvelteKit (Svelte 5, Bun, Tailwind CSS).
+- ⚡ **Frontend Architecture**: SvelteKit 3 (Svelte 5, Bun, Tailwind CSS).
 - 🔒 **Security**: Argon2id password hashing, revocable Redis multi-device session tracking, and JWT auth.
 - 🧪 **Testing**: Rust HTTP contract tests, Vitest unit suites, and zero-egress Playwright E2E browser journeys.
 - 🐳 **Containerized**: Production-ready multi-stage Dockerfiles and healthchecked Docker Compose services.

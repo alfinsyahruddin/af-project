@@ -68,47 +68,50 @@ Phase 5: Baseline Verification ◄── Phase 4: Environment & Infra ◄──�
 ### Phase 3: Frontend Scaffolding
 1. Scaffold `frontend/` as a SvelteKit single-page app with Bun:
    ```sh
-   bun create svelte@latest frontend
-   # Select: Skeleton project, TypeScript syntax, Prettier, ESLint, Vitest, Playwright
+   bunx sv create frontend
+   # Select: minimal app, TypeScript, Prettier, ESLint, Vitest, Playwright, Bun
    ```
 2. Configure pure Client-Side Single-Page Application (CSR) mode:
    - In `frontend/src/routes/+layout.ts`:
      ```ts
      export const ssr = false;
+     export const prerender = false;
      ```
-   - Install `@sveltejs/adapter-static` and configure `frontend/svelte.config.js`:
+   - Install the Kit 3 static adapter:
      ```sh
-     cd frontend && bun add -d @sveltejs/adapter-static
+     bun add --cwd frontend -d @sveltejs/adapter-static@^4
      ```
-     ```js
-     import adapter from '@sveltejs/adapter-static';
-     import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
-     export default {
-       preprocess: vitePreprocess(),
-       kit: {
-         adapter: adapter({ fallback: 'index.html' })
-       }
-     };
-     ```
+   - Configure the adapter in `frontend/vite.config.ts` as shown below.
 3. Install Tailwind CSS v4 and iconography:
    ```sh
-   cd frontend && bun add -d @tailwindcss/vite tailwindcss && bun add @iconify/svelte
+   bun add --cwd frontend -d @tailwindcss/vite tailwindcss
+   bun add --cwd frontend @iconify/svelte
    ```
    Add `@import 'tailwindcss';` and `@custom-variant dark (&:where(.dark, .dark *));` to `src/app.css`.
-   Configure `vite.config.ts`:
+   Configure `vite.config.ts` (SvelteKit 3 configures the adapter and preprocessing directly in the Vite plugin):
    ```ts
+   import adapter from '@sveltejs/adapter-static';
+   import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
    import { sveltekit } from '@sveltejs/kit/vite';
    import tailwindcss from '@tailwindcss/vite';
    import { defineConfig } from 'vite';
 
    export default defineConfig({
      envPrefix: ['VITE_', 'PUBLIC_'],
-     plugins: [tailwindcss(), sveltekit()],
-     server: { port: 3000 }
+     plugins: [
+       tailwindcss(),
+       sveltekit({
+         preprocess: vitePreprocess(),
+         adapter: adapter({ fallback: 'index.html' })
+       })
+     ],
+     server: {
+       port: 3000
+     }
    });
    ```
-4. Set up foundation primitives from [Frontend Foundations](frontend/foundations.md) (ready-to-copy starter files available in [`templates/frontend/`](../templates/frontend/)).
+4. Declare `#lib/*` subpath imports in `package.json` and extend `$app/tsconfig` in `tsconfig.json` as shown in [Frontend Foundations](frontend/foundations.md#4-sveltekit-3-build--adapter-configuration).
+5. Set up foundation primitives from [Frontend Foundations](frontend/foundations.md) (ready-to-copy starter files available in [`templates/frontend/`](../templates/frontend/)).
 
 ### Phase 4: Environment & Infrastructure Configuration
 1. Create environment templates for host and Docker:

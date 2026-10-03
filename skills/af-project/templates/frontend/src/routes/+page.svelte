@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import { toast } from '$lib/helpers/toast.svelte';
+	import ThemeToggle from '#lib/components/ThemeToggle.svelte';
+	import { toast } from '#lib/helpers/toast.svelte.js';
 </script>
 
 <svelte:head>

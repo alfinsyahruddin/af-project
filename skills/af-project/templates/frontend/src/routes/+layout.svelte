@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import type { Snippet } from 'svelte';
-	import ToastViewport from '$lib/components/ToastViewport.svelte';
+	import ToastViewport from '#lib/components/ToastViewport.svelte';
 
 	interface Props {
 		children: Snippet;

@@ -79,6 +79,7 @@ User actions flow through strictly segregated layers in one direction:
 | **API Transport** | Call backend endpoints via centralized `request<T>()`. | **Never** invoke raw `fetch()` directly in UI components. |
 | **E2E Testing** | Intercept 100% of network calls with Playwright mock fixtures. | **Never** allow E2E tests to egress to a live backend API. |
 | **Package Manager** | Use `bun` for script running and package installation. | **Never** run `npm`, `yarn`, or `pnpm`. |
+| **Library Imports** | Declare `#lib/*` in `package.json`; use `.js` extensions for TypeScript modules and `.svelte` for components. | **Never** rely on the removed `$lib` alias or extensionless library imports. |
 
 ### UI Component Reference Implementation (`src/lib/components/ToastViewport.svelte`)
 
@@ -87,7 +88,7 @@ Demonstrates reactive module state integration, keyed `{#each}` loops, enter/exi
 ```svelte
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { toasts, dismissToast } from '$lib/helpers/toast.svelte';
+	import { toasts, dismissToast } from '#lib/helpers/toast.svelte.js';
 	import { fly } from 'svelte/transition';
 	import { backOut, backIn } from 'svelte/easing';
 </script>
@@ -159,6 +160,6 @@ Follow these detailed guides to implement each frontend layer:
 
 | Focus Area | Guide | Key Topics |
 | :--- | :--- | :--- |
-| **Foundations** | [Frontend Foundations](foundations.md) | `api.ts`, `app.css`, `+layout.ts`, `+layout.svelte`, `svelte.config.js`, `vite.config.ts`, `nginx.conf` |
+| **Foundations** | [Frontend Foundations](foundations.md) | `api.ts`, `app.css`, `+layout.ts`, `+layout.svelte`, SvelteKit 3 `vite.config.ts`, `tsconfig.json`, `vitest.config.ts`, `nginx.conf` |
 | **Vertical Slice** | [Vertical Slice Feature](feature.md) | Full end-to-end feature: Types → API client → Reactive helper → UI component → Route → Unit test → E2E test |
 | **Optional Components** | [Frontend Optional Components](optional-components.md) | Auth state, navigation guards, `ThemeToggle.svelte`, toast system, complete `package.json` |

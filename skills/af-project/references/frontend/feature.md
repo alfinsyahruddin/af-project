@@ -29,8 +29,8 @@ export interface UpdateAppSettingsInput {
 Encapsulate HTTP requests through the centralized transport in [`src/lib/api.ts`](foundations.md#1-centralized-typed-api-transport-srclibapits):
 
 ```ts
-import { request } from '$lib/api';
-import type { AppSettings, UpdateAppSettingsInput } from '$lib/types/settings';
+import { request } from '#lib/api.js';
+import type { AppSettings, UpdateAppSettingsInput } from '#lib/types/settings.js';
 
 export async function fetchSettings(): Promise<AppSettings> {
 	return request<AppSettings>('/api/settings');
@@ -51,9 +51,9 @@ export async function updateSettings(input: UpdateAppSettingsInput): Promise<App
 Manage domain state, loading indicators, and error tracking using Svelte 5 runes and toast notifications:
 
 ```ts
-import { fetchSettings, updateSettings } from '$lib/api/settings';
-import { toast } from '$lib/helpers/toast.svelte';
-import type { AppSettings, UpdateAppSettingsInput } from '$lib/types/settings';
+import { fetchSettings, updateSettings } from '#lib/api/settings.js';
+import { toast } from '#lib/helpers/toast.svelte.js';
+import type { AppSettings, UpdateAppSettingsInput } from '#lib/types/settings.js';
 
 class SettingsState {
 	data = $state<AppSettings>({
@@ -106,7 +106,7 @@ Implement the UI with Svelte 5 runes (`$props`, `$state`, `$derived`, `onclick`)
 ```svelte
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import type { AppSettings, UpdateAppSettingsInput } from '$lib/types/settings';
+	import type { AppSettings, UpdateAppSettingsInput } from '#lib/types/settings.js';
 
 	interface Props {
 		settings: AppSettings;
@@ -116,8 +116,8 @@ Implement the UI with Svelte 5 runes (`$props`, `$state`, `$derived`, `onclick`)
 
 	let { settings, isSaving = false, onSave }: Props = $props();
 
-	let maintenanceMode = $state(settings.maintenance_mode);
-	let systemAnnouncement = $state(settings.system_announcement ?? '');
+	let maintenanceMode = $state(false);
+	let systemAnnouncement = $state('');
 
 	$effect(() => {
 		maintenanceMode = settings.maintenance_mode;
@@ -212,8 +212,8 @@ Mount the feature in a client route page and trigger the initial load:
 ```svelte
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import SettingsCard from '$lib/components/SettingsCard.svelte';
-	import { settingsState } from '$lib/helpers/settings.svelte';
+	import SettingsCard from '#lib/components/SettingsCard.svelte';
+	import { settingsState } from '#lib/helpers/settings.svelte.js';
 
 	onMount(() => {
 		settingsState.load();
@@ -252,7 +252,7 @@ Test component rendering, reactive property binding, and save callbacks:
 ```ts
 import { render, screen, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
-import SettingsCard from '$lib/components/SettingsCard.svelte';
+import SettingsCard from '#lib/components/SettingsCard.svelte';
 
 describe('SettingsCard Component', () => {
 	it('renders with initial values and disables save button when unchanged', () => {

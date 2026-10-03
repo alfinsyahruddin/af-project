@@ -34,7 +34,7 @@ The standard repository layout for a Rust/Actix API and SvelteKit web applicatio
 │   ├── .env.example              # Host development environment template
 │   └── .env.docker.example       # Docker container environment template
 │
-├── frontend/                     # SvelteKit single-page web client (Svelte 5, Bun, Tailwind v4)
+├── frontend/                     # SvelteKit 3 single-page web client (Svelte 5, Bun, Tailwind v4)
 │   ├── src/
 │   │   ├── app.css               # Tailwind CSS v4 design tokens and CSS variables
 │   │   ├── app.html              # Shell HTML template
@@ -49,9 +49,10 @@ The standard repository layout for a Rust/Actix API and SvelteKit web applicatio
 │   │   ├── unit/                 # Vitest unit and component tests
 │   │   └── e2e/                  # Playwright browser end-to-end user journey tests
 │   ├── package.json              # Bun dependencies and scripts
+│   ├── vitest.config.ts          # Kit 3 component tests with JSDOM
 │   ├── playwright.config.ts      # Playwright test configuration
-│   ├── svelte.config.js          # SvelteKit adapter-static SPA configuration
-│   ├── vite.config.ts            # Vite configuration with @tailwindcss/vite plugin
+│   ├── tsconfig.json             # TypeScript configuration extending $app/tsconfig
+│   ├── vite.config.ts            # Kit 3 adapter, preprocessing, Tailwind, and environment config
 │   ├── nginx.conf                # Nginx Alpine SPA routing fallback and cache rules
 │   ├── Dockerfile                # Multi-stage container build (Bun -> Nginx Alpine SPA)
 │   ├── .dockerignore             # Docker build context exclusion list
@@ -89,7 +90,7 @@ When adding new files or features, use this lookup table to determine the exact 
 | **Client Navigation Route** | `frontend/src/routes/` | Page layout and view rendering. |
 | **Browser E2E Test** | `frontend/tests/e2e/` | Playwright journey test with 100% mocked API calls. |
 | **SPA Fallback Server Conf** | `frontend/nginx.conf` | Alpine Nginx config routing client paths to `index.html`. |
-| **Static Adapter Config** | `frontend/svelte.config.js` | Configures `@sveltejs/adapter-static` with fallback `index.html`. |
+| **Static Adapter Config** | `frontend/vite.config.ts` | Passes `@sveltejs/adapter-static` with fallback `index.html` to `sveltekit()`. |
 | **Tailwind & Vite Setup** | `frontend/vite.config.ts` | Configures `@tailwindcss/vite` and `envPrefix: ['VITE_', 'PUBLIC_']`. |
 
 ---

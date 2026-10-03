@@ -9,7 +9,7 @@ These optional components provide client-side authentication handling, reactive 
 Manage authentication tokens, current user session state, and login/logout lifecycle:
 
 ```ts
-import { request, handleAuthFailure } from '$lib/api';
+import { request, handleAuthFailure } from '#lib/api.js';
 
 export interface UserSession {
 	id: string;
@@ -120,7 +120,7 @@ Interactive theme switcher using Svelte 5 runes and `@iconify/svelte`:
 ```svelte
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { toggleTheme, getCurrentTheme } from '$lib/helpers/theme';
+	import { toggleTheme, getCurrentTheme } from '#lib/helpers/theme.js';
 
 	interface Props {
 		ariaLabel?: string;
@@ -200,7 +200,7 @@ Smooth floating toast viewport with enter/exit transitions and Lucide icons:
 ```svelte
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { toasts, dismissToast } from '$lib/helpers/toast.svelte';
+	import { toasts, dismissToast } from '#lib/helpers/toast.svelte.js';
 	import { fly } from 'svelte/transition';
 	import { backOut, backIn } from 'svelte/easing';
 </script>
@@ -268,7 +268,7 @@ Smooth floating toast viewport with enter/exit transitions and Lucide icons:
 
 ## 4. Complete `package.json` Reference
 
-Verified dependency tree with lockfile-pinned versions:
+SvelteKit 3 requires Node.js 22.17 or newer when running on Node, TypeScript 6, Svelte 5.57.1 or newer, Vite 8.0.12 or newer, and `@sveltejs/vite-plugin-svelte` 7 or newer. The versions below meet those minimums and match the frontend template.
 
 ```json
 {
@@ -277,39 +277,43 @@ Verified dependency tree with lockfile-pinned versions:
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
+		"dev": "bun --bun vite dev",
+		"build": "bun --bun vite build",
+		"preview": "bun --bun vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"test:unit": "vitest run",
+		"test:unit": "bun --bun vitest run",
 		"test:e2e": "playwright test"
 	},
 	"dependencies": {
-		"@iconify/svelte": "^4.2.0"
+		"@iconify/svelte": "^5.2.2"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.49.0",
-		"@sveltejs/adapter-static": "^3.0.6",
-		"@sveltejs/kit": "^2.15.0",
-		"@sveltejs/vite-plugin-svelte": "^5.0.0",
-		"@tailwindcss/vite": "^4.0.0",
-		"@testing-library/svelte": "^5.2.0",
+		"@sveltejs/adapter-static": "^4.0.0",
+		"@sveltejs/kit": "^3.0.0",
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
+		"@tailwindcss/vite": "^4.3.3",
+		"@testing-library/svelte": "^5.4.2",
 		"@types/node": "^22.10.0",
 		"eslint": "^9.16.0",
-		"jsdom": "^25.0.0",
-		"prettier": "^3.4.0",
-		"prettier-plugin-svelte": "^3.3.0",
-		"prettier-plugin-tailwindcss": "^0.6.0",
-		"svelte": "^5.16.0",
-		"svelte-check": "^4.1.0",
-		"tailwindcss": "^4.0.0",
-		"typescript": "^5.7.0",
-		"vite": "^6.0.0",
-		"vitest": "^2.1.0"
+		"jsdom": "^29.1.1",
+		"prettier": "^3.9.5",
+		"prettier-plugin-svelte": "^4.1.1",
+		"prettier-plugin-tailwindcss": "^0.8.1",
+		"svelte": "^5.57.1",
+		"svelte-check": "^4.7.5",
+		"tailwindcss": "^4.3.3",
+		"typescript": "^6.0.3",
+		"vite": "^8.1.5",
+		"vitest": "^4.1.10"
+	},
+	"packageManager": "bun@1.4.0",
+	"imports": {
+		"#lib/*": "./src/lib/*"
 	}
 }
 ```

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { toasts, dismissToast } from '$lib/helpers/toast.svelte';
+	import { toasts, dismissToast } from '#lib/helpers/toast.svelte.js';
 	import { fly } from 'svelte/transition';
 	import { backOut, backIn } from 'svelte/easing';
 </script>

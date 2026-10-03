@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { toggleTheme, getCurrentTheme } from '$lib/helpers/theme';
+	import { toggleTheme, getCurrentTheme } from '#lib/helpers/theme.js';
 
 	interface Props {
 		ariaLabel?: string;
