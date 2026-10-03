@@ -1,7 +1,7 @@
 ---
 name: af-project
 description: Apply af-project conventions when creating or evolving Alfin's personal software projects. Trigger when asked to follow this project guideline, scaffold a new repository, implement Rust/Actix APIs or SvelteKit frontends, review architecture, or enforce full-stack project standards.
-license: Source-Available
+license: Viewing-Only
 metadata:
   author: Alfin Syahruddin
   version: "1.0.0"

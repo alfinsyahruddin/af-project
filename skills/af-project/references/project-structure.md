@@ -62,7 +62,7 @@ The standard repository layout for a Rust/Actix API and SvelteKit web applicatio
 ├── docs/                         # Detailed architecture, environment, and contributor guides
 ├── docker-compose.yml            # Local development backing services and full-stack orchestration
 ├── AGENTS.md                     # Contributor entrypoint and critical architecture invariants
-├── LICENSE                       # Source-available evaluation license terms
+├── LICENSE                       # Terms selected for this project's distribution
 └── README.md                     # Product overview, prerequisites, and quick-start instructions
 ```
 

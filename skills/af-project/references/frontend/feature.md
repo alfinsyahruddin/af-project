@@ -307,105 +307,16 @@ Playwright tests exercise user journeys against the frontend dev server. Every b
 | Practice | Strictly Required (DO) | Invariant Violation (DON'T) |
 | :--- | :--- | :--- |
 | **API Interception** | Intercept every `/api/**` route before `page.goto`. | **Never** let requests hit a real backend via `route.continue()` or `route.fetch()`. |
-| **Unmocked Endpoints** | Abort request (`route.abort('failed')`) and fail the test. | **Never** return generic fallback 200 `{}` envelopes to mask unmocked paths. |
+| **Unmocked Endpoints** | Record and abort the request, then assert the guard after the journey so background calls fail the test. | **Never** return generic fallback 200 `{}` envelopes to mask unmocked paths. |
 | **DOM Selectors** | Use accessible queries (`getByRole`, `getByTestId`, `getByText`). | **Never** use brittle class or tag selectors (e.g. `div.container > button:nth-child(2)`). |
 | **Assertions & Timing** | Use auto-waiting web assertions (`await expect(...).toBeVisible()`). | **Never** use arbitrary hardcoded sleep timers (`page.waitForTimeout(2000)`). |
 | **Service Workers** | Block service workers in config (`serviceWorkers: 'block'`). | **Never** allow service workers to bypass Playwright route interception. |
 
-### Playwright Configuration (`playwright.config.ts`)
-Ensure background service workers are blocked and the web server is configured (template at [`templates/frontend/playwright.config.ts`](../../templates/frontend/playwright.config.ts)):
+### Starter Configuration and API Guard
 
-```ts
-import { defineConfig, devices } from '@playwright/test';
+Use [`playwright.config.ts`](../../templates/frontend/playwright.config.ts) for the dev-server-only setup and service-worker blocking. Install the reusable [`mock-api.ts`](../../templates/frontend/tests/e2e/mock-api.ts) guard before navigation, then call `assertNoUnexpectedRequests()` after the journey. Unknown `/api/**` calls are recorded and aborted, so background polling is reported even when the page handles the failed fetch.
 
-export default defineConfig({
-	testDir: './tests/e2e',
-	fullyParallel: true,
-	use: {
-		baseURL: 'http://localhost:4173',
-		headless: true,
-		serviceWorkers: 'block'
-	},
-	webServer: {
-		command: 'bun run dev --port 4173',
-		url: 'http://localhost:4173',
-		reuseExistingServer: !process.env.CI
-	}
-});
-```
-
-### User Journey Test with Strict Mocking (`tests/e2e/settings.test.ts`)
-
-```ts
-import { test, expect } from '@playwright/test';
-
-test.describe('Settings Page Journey', () => {
-	test.beforeEach(async ({ page }) => {
-		// Strict guard: Abort and fail on any unmocked API call
-		await page.route('**/api/**', async (route) => {
-			const request = route.request();
-			const url = new URL(request.url());
-
-			if (url.pathname === '/api/settings' && request.method() === 'GET') {
-				return route.fulfill({
-					status: 200,
-					contentType: 'application/json',
-					body: JSON.stringify({
-						data: { maintenance_mode: false, system_announcement: 'Old message' },
-						status: 200,
-						message: null,
-						timestamp: new Date().toISOString()
-					})
-				});
-			}
-
-			if (url.pathname === '/api/settings' && request.method() === 'PATCH') {
-				const body = request.postDataJSON();
-				return route.fulfill({
-					status: 200,
-					contentType: 'application/json',
-					body: JSON.stringify({
-						data: { maintenance_mode: body.maintenance_mode, system_announcement: body.system_announcement },
-						status: 200,
-						message: 'Settings updated successfully',
-						timestamp: new Date().toISOString()
-					})
-				});
-			}
-
-			// Fail fast on unexpected egress
-			console.error(`[E2E Guard] Unhandled request: ${request.method()} ${url.pathname}`);
-			await route.abort('failed');
-		});
-	});
-
-	test('loads and updates settings with 100% mocked responses', async ({ page }) => {
-		// Navigate to settings page
-		await page.goto('/settings');
-
-		// Assert initial rendered state
-		const toggle = page.getByTestId('maintenance-toggle');
-		await expect(toggle).not.toBeChecked();
-
-		const announcement = page.getByTestId('announcement-input');
-		await expect(announcement).toHaveValue('Old message');
-
-		// Modify values
-		await toggle.check({ force: true });
-		await announcement.fill('Scheduled downtime at midnight');
-
-		// Submit form
-		await page.getByTestId('save-settings-btn').click();
-
-		// Verify updated state persists in UI
-		await expect(toggle).toBeChecked();
-		await expect(announcement).toHaveValue('Scheduled downtime at midnight');
-
-		// Verify success notification rendered by ToastViewport
-		await expect(page.getByText('Settings updated successfully')).toBeVisible();
-	});
-});
-```
+The isolated [`mock-api.test.ts`](../../templates/frontend/tests/e2e/mock-api.test.ts) deliberately issues an unexpected background request and verifies that the guard reports it. Extend this pattern with endpoint fixtures for each product journey; mock known method/path pairs and never use a permissive fallback.
 
 ### Execution Command
 ```sh

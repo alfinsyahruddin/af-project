@@ -49,7 +49,4 @@ Use `af-project` skill.
 
 ## License
 
-Copyright © 2026 Alfin Syahruddin. All rights reserved.
-
-This project is source-available for viewing and evaluation purposes only. See [`LICENSE`](./LICENSE) for full terms.
-
+This is a private project and is not open source. The skill source is available for viewing only under [`skills/af-project/LICENSE`](./skills/af-project/LICENSE).

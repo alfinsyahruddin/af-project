@@ -56,9 +56,7 @@ Choose checks based on the files and behavior changed. Run focused checks for th
 
 ## License
 
-Copyright © 2026 Alfin Syahruddin. All rights reserved.
-
-This project is source-available for viewing and evaluation purposes only. Unauthorized copying, modification, forking, redistribution, or hosting is strictly prohibited. See [`LICENSE`](./LICENSE) for full terms.
+This is a private project, not an open source project. The skill source is available for viewing only. Unauthorized copying, modification, forking, redistribution, or hosting is prohibited. See the [`LICENSE`](../LICENSE) for full terms.
 ```
 
 ---
