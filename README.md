@@ -1,6 +1,26 @@
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./resources/af-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./resources/af-light.svg">
+  <img src="./resources/af-light.svg" alt="af-project Logo" width="88" height="88" />
+</picture>
+
 # af-project
 
-A reusable project guideline and agent skill for Alfin's personal software projects across platforms. It provides strict architectural invariants, progressive setup workflows, and concrete reference implementations.
+**A reusable project guideline and agent skill for Alfin's personal software projects across platforms.**
+
+<p align="center">
+    <a href="./skills/af-project/LICENSE"><img src="https://img.shields.io/badge/License-Viewing--Only-blue" alt="License"/></a>
+    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-1.80+-orange?logo=rust" alt="Rust"/></a>
+    <a href="https://svelte.dev/"><img src="https://img.shields.io/badge/Svelte-5_Runes-FF3E00?logo=svelte" alt="Svelte 5"/></a>
+</p>
+
+<br />
+
+</div>
+
+It provides strict architectural invariants, progressive setup workflows, and concrete reference implementations.
 
 ---
 
@@ -49,4 +69,4 @@ Use `af-project` skill.
 
 ## License
 
-This is a private project and is not open source. The skill source is available for viewing only under [`skills/af-project/LICENSE`](./skills/af-project/LICENSE).
+This is a private project. The skill source is available for viewing only under [`skills/af-project/LICENSE`](./skills/af-project/LICENSE).
