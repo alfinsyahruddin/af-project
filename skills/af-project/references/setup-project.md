@@ -44,7 +44,7 @@ Phase 5: Baseline Verification ◄── Phase 4: Environment & Infra ◄──�
    build/
    .svelte-kit/
    ```
-3. Create initial `README.md` and `AGENTS.md` following [Documentation Guidelines](documentation.md).
+3. Create initial `README.md` and `AGENTS.md` following [Documentation Guidelines](documentation.md) (starter templates available in [`templates/README.md`](../templates/README.md) and [`templates/AGENTS.md`](../templates/AGENTS.md)).
 
 ### Phase 2: Backend Scaffolding
 1. Scaffold `backend/` as a Rust package:

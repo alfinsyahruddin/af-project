@@ -2,107 +2,84 @@
 
 Clear, accurate, and actionable documentation is mandatory. `README.md` introduces the project to human developers; `AGENTS.md` enforces architecture invariants for AI coding agents and contributors; `docs/` houses modular deep dives.
 
+Use the starter templates in [`templates/`](../templates/) as the authoritative source of truth for the root `README.md` and `AGENTS.md` skeletons.
+
 ---
 
-## 1. `README.md` Template Skeleton
+## 1. Root `README.md`
 
-Every project must maintain a root `README.md` conforming to this layout:
+Every project must maintain a root `README.md` based on the starter template in [`templates/README.md`](../templates/README.md).
+
+### Headings & Layout Structure
+
+The root `README.md` begins with a centered branding and preview block followed by detailed overview, features, tech stack, and setup instructions:
+
+1. **Centered Header Block (`<div align="center">`)**:
+   - **Theme-aware Logo**: `<picture>` block specifying dark mode (`./frontend/static/logo-dark.svg`) and light mode (`./frontend/static/logo-light.svg`) with `height="36"`.
+   - **App Name**: App / Project Name
+   - **Tagline**: Single bold sentence defining core purpose and problem solved.
+   - **Badges**: Centered badges in `<p align="center">` highlighting key tech stack (Rust, Svelte 5) and primary data or third-party service providers.
+2. **Overview (`## Overview`)**:
+   - Bold project name followed by a comprehensive summary of functionality, target audience, and key value proposition.
+   - Quick resource links: 🌐 Live Preview, 🎬 1-min Teaser, 🎥 3-min Demo.
+3. **Features (`## Features`)**: Bulleted list summarizing core features.
+4. **Tech Stack (`## Tech Stack`)**: Breakdown across backend, frontend, and infrastructure.
+5. **Quick Start (`## Quick Start`)**: Step-by-step setup (Prerequisites, Environment Setup, Backing Services, Development Servers).
+6. **Verification & Testing (`## Verification & Testing`)**: Focused checks vs full-suite execution guidance.
+7. **License (`## License`)**: Project licensing terms.
+
+### Example Header Format
 
 ```markdown
-# <Project Name>
+<div align="center">
 
-<One clear sentence explaining what this project does and the problem it solves.>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./frontend/static/logo-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./frontend/static/logo-light.svg">
+  <img src="./frontend/static/logo-light.svg" alt="Trading Lab Logo" height="36" />
+</picture>
 
 ---
+
+**AI-powered backtesting platform for the Indonesia Stock Exchange (IDX).**
+
+<p align="center">
+    <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-1.80+-orange?logo=rust" alt="Rust"/></a>
+    <a href="https://svelte.dev/"><img src="https://img.shields.io/badge/Svelte-5_Runes-FF3E00?logo=svelte" alt="Svelte 5"/></a>
+    <a href="https://sectors.app"><img src="https://img.shields.io/badge/Data-Sectors.app-ff0000" alt="Sectors.app"/></a>
+</p>
+
+<br />
+
+<img src="./frontend/static/backtest.webp" alt="Trading Lab Quantitative Backtesting Platform" width="100%" />
+
+</div>
+
+---
+
+## Overview
+
+**Trading Lab** is a backtesting platform built for the Indonesia Stock Exchange (IDX). It enables traders to easily build custom multi-condition trading strategies (AI-Powered), test them against historical market data, analyze risk and performance metrics, and share winning strategies with the community.
+
+- 🌐 **Live Preview**: [https://trading-lab.xyz](https://trading-lab.xyz)
+- 🎬 **1-min Teaser**: [https://youtu.be/p1dY_RPsLf4](https://youtu.be/p1dY_RPsLf4)
+- 🎥 **3-min Demo**: [https://youtu.be/pqEO3HtPNvs](https://youtu.be/pqEO3HtPNvs)
 
 ## Features
-- **Feature A**: Summary of capability.
-- **Feature B**: Summary of capability.
-
-## Tech Stack
-- **Backend**: Rust (Actix-web 4, SQLx, PostgreSQL, Redis)
-- **Frontend**: SvelteKit 3, Svelte 5, Bun, Tailwind CSS v4
-- **Infrastructure**: Docker Compose, Multi-stage Alpine images
-
-## Quick Start
-
-### 1. Prerequisites
-- Docker & Docker Compose
-- Bun (latest)
-- Rust (stable toolchain)
-
-### 2. Environment Setup
-\`\`\`sh
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-\`\`\`
-
-### 3. Start Backing Services
-\`\`\`sh
-docker compose up postgres redis -d
-\`\`\`
-
-### 4. Run Development Servers
-\`\`\`sh
-# Backend (from backend/)
-cargo run
-
-# Frontend (from frontend/)
-bun run dev
-\`\`\`
-
-## Verification & Testing
-Choose checks based on the files and behavior changed. Run focused checks for the affected area; run the full suite when a change spans areas or focused checks do not give enough coverage. See the project workflow guide for available commands.
-
-## License
-
-This is a private project, not an open source project. The skill source is available for viewing only. Unauthorized copying, modification, forking, redistribution, or hosting is prohibited. See the [`LICENSE`](../LICENSE) for full terms.
 ```
 
 ---
 
-## 2. `AGENTS.md` Template Skeleton
+## 2. Contributor Guide (`AGENTS.md`)
 
-`AGENTS.md` is the primary instruction file for AI agents working in the repository. Keep it compact, prescriptive, and focused on non-negotiable rules:
+`AGENTS.md` is the primary instruction file for AI agents working in the repository. Keep it compact, prescriptive, and focused on non-negotiable rules. It explicitly instructs coding agents to use the `af-project` skill (`Use \`af-project\` skill.`).
 
-```markdown
-# Agent & Contributor Guide
+See the authoritative starter template in [`templates/AGENTS.md`](../templates/AGENTS.md).
 
-Welcome to <Project Name>. This document establishes the core architectural principles, golden rules, and verification procedures.
-
----
-
-## 1. Documentation Index
-
-| Guide | Content |
-| :--- | :--- |
-| `docs/backend.md` | Layer segregation, error mapping, SQLx patterns |
-| `docs/frontend.md` | Svelte 5 runes, state helpers, routing guards |
-| `docs/environment.md` | Host vs container ports, default local credentials |
-| `docs/testing.md` | Unit tests, HTTP contract tests, Playwright E2E |
-| `docs/workflow.md` | Contributor workflows, verification checklists, git guidelines |
-
----
-
-## 2. Inviolable Golden Rules
-
-1. **Strict Layering**: Routes only extract HTTP inputs and invoke services. Repositories only execute SQL. All DTOs reside in \`backend/src/entities/\`.
-2. **Unified API Envelope**: Every endpoint returns \`AppResponse<T>\` via \`.json()\` or \`.json_data()\`. Never return raw ad-hoc JSON.
-3. **No Unwraps in Production**: Use \`Result<T, AppError>\` and \`?\` error propagation exclusively.
-4. **Svelte 5 Runes Only**: Strictly use \`$props\`, \`$state\`, \`$derived\`, and \`$effect\`. No legacy Svelte 3/4 syntax.
-5. **CSR Only**: Set \`export const ssr = false;\` in root \`+layout.ts\`. Never create server routes.
-6. **Zero-Egress E2E**: Playwright tests must mock all API endpoints and run against the frontend dev server only.
-7. **Commit Message Style**: When a commit is authorized, use concise natural language. Do NOT use Conventional Commit prefixes (`feat:`, `fix:`). Multiline commit messages with dashed list details are explicitly intended for multi-part changes. This style guidance does not authorize creating a commit.
-8. **Append-Only Migrations**: Never modify or reorder migrations that have already run. Always create a new sequential file under `backend/migrations/`.
-9. **No `@layer components` for Views**: Never use Tailwind `@layer components` or global `@apply` abstractions for feature- or page-specific styling. Colocate styles directly in Svelte components with utility classes or scoped `<style>` blocks.
-
----
-
-## 3. Verification Checklist
-
-Choose checks based on the files and behavior changed. Run focused checks for the affected area; run the full suite when the change spans areas or focused checks do not give enough coverage. Report the commands run and their results, and distinguish failures caused by the change from unrelated or baseline failures. An uncommitted working tree is a valid handoff when the changes are reviewable and unrelated user changes are preserved.
-Commit message style does not authorize creating a commit; commit only when the user has authorized it.
-```
+It contains three mandatory sections:
+1. **Documentation Index**: Quick lookup table mapping modular guides under `docs/` (`docs/backend.md`, `docs/frontend.md`, etc.).
+2. **Inviolable Golden Rules**: Explicit architectural constraints (strict layering, unified API envelope, zero unwraps, Svelte 5 runes, CSR only, zero-egress E2E, natural language commits, append-only migrations, no `@layer components` for view styling).
+3. **Verification Checklist**: Context-aware testing and reporting instructions.
 
 ---
 
