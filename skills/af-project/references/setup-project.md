@@ -95,11 +95,15 @@ Phase 5: Baseline Verification ◄── Phase 4: Environment & Infra ◄──�
 1. Create environment templates for host and Docker:
    - `backend/.env.example` & `backend/.env.docker.example`
    - `frontend/.env.example` & `frontend/.env.docker.example`
-2. Create local copies:
+2. Create actual local `.env` and `.env.docker` files:
    ```sh
    cp backend/.env.example backend/.env
+   cp backend/.env.docker.example backend/.env.docker
    cp frontend/.env.example frontend/.env
+   cp frontend/.env.docker.example frontend/.env.docker
    ```
+   > [!IMPORTANT]
+   > Do not forget to create actual `.env` and `.env.docker` files and fill them with actual working credentials and configuration (do not leave dummy or placeholder credentials). Ensure secrets and database connection strings match your local environment so services can authenticate and run properly.
 3. Configure `docker-compose.yml` in the repository root for local backing services (PostgreSQL, optional Redis) as detailed in [Environment and Compose](environment-and-docker.md) (starter template available in [`templates/docker-compose.yml`](../templates/docker-compose.yml)).
 
 ### Phase 5: Baseline Verification
