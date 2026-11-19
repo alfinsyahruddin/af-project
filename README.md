@@ -31,6 +31,7 @@ It provides strict architectural invariants, progressive setup workflows, and co
 - 🔒 **Security**: Argon2id password hashing, revocable Redis multi-device session tracking, and JWT auth.
 - 🧪 **Testing**: Rust HTTP contract tests, Vitest unit suites, and zero-egress Playwright E2E browser journeys.
 - 🐳 **Containerized**: Production-ready multi-stage Dockerfiles and healthchecked Docker Compose services.
+- 🔍 **Code Review & HTML Reports**: Standardized review checklist, ambiguity handling, language selection (English/Indonesian), and self-contained interactive HTML review artifacts.
 
 ---
 

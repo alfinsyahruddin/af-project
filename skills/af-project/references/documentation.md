@@ -93,5 +93,6 @@ It contains three mandatory sections:
 - `docs/environment.md`: Full reference table of all environment variables, public vs secret attributes, and default ports.
 - `docs/testing.md`: Testing guidelines, mock fixture setups, and contract validation.
 - `docs/workflow.md`: Contributor git workflows, migration verification steps, and release tagging.
+- `docs/code-review.md`: Code review procedures, report language rules, and HTML output artifact standards.
 
 When committing a change to an invariant, endpoint, or environment variable, update its documentation in that commit.

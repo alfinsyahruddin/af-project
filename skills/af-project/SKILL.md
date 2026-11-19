@@ -1,6 +1,6 @@
 ---
 name: af-project
-description: Apply af-project conventions when creating or evolving Alfin's personal software projects. Trigger when asked to follow this project guideline, scaffold a new repository, implement Rust/Actix APIs or SvelteKit frontends, review architecture, or enforce full-stack project standards.
+description: Apply af-project conventions when creating or evolving Alfin's personal software projects. Trigger when asked to follow this project guideline, scaffold a new repository, implement Rust/Actix APIs or SvelteKit frontends, review architecture, conduct code reviews with HTML reports, or enforce full-stack project standards.
 license: Viewing-Only
 metadata:
   author: Alfin Syahruddin
@@ -50,6 +50,19 @@ Find your current task and read only the relevant reference files:
 | **Building a new frontend page, component, or state module**  | [Frontend Code Patterns](references/frontend/code-patterns.md) → [Vertical Slice](references/frontend/feature.md)  |
 | **Modifying frontend setup, CSS tokens, or API client**       | [Frontend Foundations](references/frontend/foundations.md)                                                         |
 | **Implementing auth state, toasts, or theme toggling**        | [Frontend Optional Components](references/frontend/optional-components.md)                                         |
+| **Conducting a code review or generating an HTML review report** | [Code Review](references/code-review.md)                                                                         |
+
+---
+
+## AI Workflow & Code Review Rules
+
+These rules govern how you operate when assisting in an AF-Project:
+
+- **Ask the user about any unclear decision** before proceeding. Do not assume ambiguous requirements, architecture choices, or scope. A clarifying question is always cheaper than a wrong implementation.
+- **Always ask report language for code reviews**: When conducting a code review, ALWAYS ask whether the user wants English or Indonesia for the HTML report before generating it ([references/code-review.md](references/code-review.md)).
+- **Always clarify review scope if ambiguous**: When asked to review code without an explicit diff target, immediately prompt whether to review the latest local commit (`HEAD^!`), a specific commit SHA, a branch comparison (e.g. `main...feature`), or uncommitted working changes.
+- **Strict diff-only boundary**: Only review modified and added lines in the diff. Never nitpick untouched legacy code.
+- **Generate self-contained HTML artifact**: Save reports to `CODE-REVIEW/code-review-<slug>.html` and ensure `CODE-REVIEW/` is in `.gitignore`.
 
 ---
 

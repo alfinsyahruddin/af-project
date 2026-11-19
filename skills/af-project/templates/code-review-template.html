@@ -1,0 +1,2496 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AF-Project Code Review - {{REVIEW_TITLE}}</title>
+    <style>
+      :root {
+        --font-sans:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter",
+          "Helvetica Neue", Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+
+        /* Primary Brand: Clean Monochrome Black & White */
+        --brand-primary: #ffffff;
+        --brand-primary-hover: #e4e4e7;
+        --brand-primary-subtle: rgba(255, 255, 255, 0.12);
+
+        /* Dark Black Palette (Default - Enterprise Minimalist) */
+        --bg-canvas: #050507;
+        --bg-surface: #0c0c0e;
+        --bg-surface-elevated: #16161a;
+        --bg-surface-subtle: #08080a;
+        --border-subtle: #222226;
+        --border-strong: #333338;
+
+        --text-main: #f4f4f5;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+
+        /* Checkbox check icon */
+        --check-bg: #ffffff;
+        --check-svg: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' stroke='%2309090b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='3.5 8.5 6.5 11.5 12.5 5.5'%3E%3C/polyline%3E%3C/svg%3E");
+
+        /* Severity Badges & Tints (Vibrant Colors) */
+        --sev-crit-bg: rgba(239, 68, 68, 0.14);
+        --sev-crit-border: rgba(239, 68, 68, 0.35);
+        --sev-crit-text: #f87171;
+        --sev-crit-badge: #ef4444;
+
+        --sev-high-bg: rgba(249, 115, 22, 0.14);
+        --sev-high-border: rgba(249, 115, 22, 0.35);
+        --sev-high-text: #fb923c;
+        --sev-high-badge: #f97316;
+
+        --sev-med-bg: rgba(245, 158, 11, 0.14);
+        --sev-med-border: rgba(245, 158, 11, 0.35);
+        --sev-med-text: #fbbf24;
+        --sev-med-badge: #f59e0b;
+
+        --sev-low-bg: rgba(34, 197, 94, 0.14);
+        --sev-low-border: rgba(34, 197, 94, 0.35);
+        --sev-low-text: #4ade80;
+        --sev-low-badge: #22c55e;
+      }
+
+      [data-theme="light"] {
+        --brand-primary: #09090b;
+        --brand-primary-hover: #27272a;
+        --brand-primary-subtle: rgba(0, 0, 0, 0.08);
+
+        --bg-canvas: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-surface-elevated: #f1f5f9;
+        --bg-surface-subtle: #f8fafc;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+
+        --text-main: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+
+        /* Checkbox check icon in light mode */
+        --check-bg: #09090b;
+        --check-svg: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='3.5 8.5 6.5 11.5 12.5 5.5'%3E%3C/polyline%3E%3C/svg%3E");
+
+        --sev-crit-bg: #fef2f2;
+        --sev-crit-border: #fecaca;
+        --sev-crit-text: #dc2626;
+        --sev-crit-badge: #dc2626;
+
+        --sev-high-bg: #fff7ed;
+        --sev-high-border: #fed7aa;
+        --sev-high-text: #ea580c;
+        --sev-high-badge: #ea580c;
+
+        --sev-med-bg: #fffbeb;
+        --sev-med-border: #fde68a;
+        --sev-med-text: #d97706;
+        --sev-med-badge: #d97706;
+
+        --sev-low-bg: #f0fdf4;
+        --sev-low-border: #bbf7d0;
+        --sev-low-text: #15803d;
+        --sev-low-badge: #16a34a;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-canvas);
+        color: var(--text-main);
+        line-height: 1.5;
+        font-size: 13px;
+        transition:
+          background-color 0.15s ease,
+          color 0.15s ease;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Container */
+      .container {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 24px 28px 100px;
+      }
+
+      /* Top Header */
+      header {
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(8px);
+      }
+
+      .header-inner {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 10px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .af-logo-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text-main);
+        text-decoration: none;
+        transition: opacity 0.15s ease;
+        user-select: none;
+      }
+
+      .af-logo-link:hover {
+        opacity: 0.85;
+      }
+
+      .af-logo-link svg {
+        height: 20px;
+        width: auto;
+      }
+
+      .af-brand-title {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-main);
+      }
+
+      .divider-v {
+        width: 1px;
+        height: 16px;
+        background: var(--border-strong);
+      }
+
+      .sub-brand-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      .ref-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        white-space: nowrap;
+        max-width: none;
+        overflow: visible;
+        text-overflow: clip;
+        flex-shrink: 0;
+      }
+
+      .ref-badge span {
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: clip;
+        max-width: none;
+      }
+
+      .theme-toggle-btn {
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        border-radius: 4px;
+        padding: 5px 10px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        transition: all 0.15s ease;
+      }
+
+      .theme-toggle-btn:hover {
+        border-color: var(--text-main);
+        color: var(--text-main);
+      }
+
+      .theme-toggle-btn svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      /* Executive Summary Bar */
+      .exec-summary {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        margin-top: 16px;
+        margin-bottom: 20px;
+        overflow: hidden;
+      }
+
+      .exec-header {
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .exec-title-group h1 {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-main);
+        letter-spacing: -0.01em;
+        margin-bottom: 4px;
+      }
+
+      .exec-title-group p {
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .verdict-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 5px 12px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
+
+      .verdict-tag.changes-required {
+        background: var(--sev-crit-bg);
+        border: 1px solid var(--sev-crit-border);
+        color: var(--sev-crit-text);
+      }
+
+      .verdict-tag.approved {
+        background: rgba(34, 197, 94, 0.14);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        color: #4ade80;
+      }
+
+      .verdict-tag.commented {
+        background: rgba(161, 161, 170, 0.14);
+        border: 1px solid rgba(161, 161, 170, 0.35);
+        color: var(--text-main);
+      }
+
+      .verdict-tag svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      /* Meta Grid Strip */
+      .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        padding: 12px 20px;
+        background: var(--bg-surface-subtle);
+        gap: 16px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      @media (max-width: 860px) {
+        .meta-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .meta-col {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .meta-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .meta-val {
+        font-size: 12px;
+        font-family: var(--font-mono);
+        color: var(--text-main);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* Severity Proportion Bar */
+      .sev-bar-wrapper {
+        padding: 12px 20px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .sev-prog-track {
+        height: 4px;
+        border-radius: 2px;
+        background: var(--border-subtle);
+        display: flex;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .sev-seg {
+        height: 100%;
+        transition: width 0.2s ease;
+      }
+
+      .sev-seg.crit {
+        background: var(--sev-crit-badge);
+      }
+      .sev-seg.high {
+        background: var(--sev-high-badge);
+      }
+      .sev-seg.med {
+        background: var(--sev-med-badge);
+      }
+      .sev-seg.low {
+        background: var(--sev-low-badge);
+      }
+
+      /* Filter Toolbar Tabs */
+      .filter-tabs {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .filter-tab {
+        background: transparent;
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 10px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+        font-family: var(--font-sans);
+      }
+
+      .filter-tab:hover {
+        border-color: var(--border-strong);
+        color: var(--text-main);
+      }
+
+      .filter-tab.active {
+        background: var(--bg-surface-elevated);
+        border-color: var(--border-strong);
+        color: var(--text-main);
+      }
+
+      .tab-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+
+      .tab-dot.all {
+        background: var(--text-muted);
+      }
+      .tab-dot.crit {
+        background: var(--sev-crit-badge);
+      }
+      .tab-dot.high {
+        background: var(--sev-high-badge);
+      }
+      .tab-dot.med {
+        background: var(--sev-med-badge);
+      }
+      .tab-dot.low {
+        background: var(--sev-low-badge);
+      }
+
+      .tab-count {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        opacity: 0.8;
+      }
+
+      /* Findings List */
+      .findings-header {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .findings-header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .findings-header h2 {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .findings-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      /* Finding Card */
+      .finding-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        overflow: hidden;
+        transition: border-color 0.15s ease;
+      }
+
+      .finding-card:hover {
+        border-color: var(--border-strong);
+      }
+
+      .finding-card.severity-CRITICAL {
+        border-left: 3px solid var(--sev-crit-badge);
+      }
+      .finding-card.severity-HIGH {
+        border-left: 3px solid var(--sev-high-badge);
+      }
+      .finding-card.severity-MEDIUM {
+        border-left: 3px solid var(--sev-med-badge);
+      }
+      .finding-card.severity-LOW {
+        border-left: 3px solid var(--sev-low-badge);
+      }
+
+      .finding-header {
+        padding: 12px 18px;
+        background: var(--bg-surface-subtle);
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+      }
+
+      .finding-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 4px;
+      }
+
+      .finding-number {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-main);
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-subtle);
+        padding: 1px 6px;
+        border-radius: 3px;
+      }
+
+      .badge-sev {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border-radius: 3px;
+      }
+
+      .badge-sev.CRITICAL {
+        background: var(--sev-crit-bg);
+        border: 1px solid var(--sev-crit-border);
+        color: var(--sev-crit-text);
+      }
+
+      .badge-sev.HIGH {
+        background: var(--sev-high-bg);
+        border: 1px solid var(--sev-high-border);
+        color: var(--sev-high-text);
+      }
+
+      .badge-sev.MEDIUM {
+        background: var(--sev-med-bg);
+        border: 1px solid var(--sev-med-border);
+        color: var(--sev-med-text);
+      }
+
+      .badge-sev.LOW {
+        background: var(--sev-low-bg);
+        border: 1px solid var(--sev-low-border);
+        color: var(--sev-low-text);
+      }
+
+      .badge-cat {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        padding: 2px 7px;
+        border-radius: 3px;
+      }
+
+      .badge-lang {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        border: 1px solid var(--border-subtle);
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+
+      .finding-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .file-ref {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-secondary);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+      }
+
+      .file-ref svg {
+        width: 12px;
+        height: 12px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+
+      .finding-header-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .finding-check-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.15s ease;
+      }
+
+      .finding-check-label:hover {
+        color: var(--text-main);
+      }
+
+      .finding-check-label input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1.5px solid var(--border-strong);
+        background-color: transparent;
+        cursor: pointer;
+        margin: 0;
+        outline: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+        transition: all 0.15s ease;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .finding-check-label:hover input[type="checkbox"] {
+        border-color: var(--text-main);
+      }
+
+      .finding-check-label input[type="checkbox"]:checked {
+        background-color: var(--check-bg);
+        border-color: var(--check-bg);
+        background-image: var(--check-svg);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 9px 9px;
+      }
+
+      .finding-check-label input[type="checkbox"]:focus-visible {
+        box-shadow: 0 0 0 2px var(--brand-primary-subtle);
+      }
+
+      .finding-card.is-excluded {
+        opacity: 0.55;
+        border-style: dashed !important;
+        transition: opacity 0.2s ease;
+      }
+
+      /* AI Prompt Box for Excluded Findings - FLOATING BOTTOM BAR (ALWAYS DARK THEME) */
+      .ai-prompt-box {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 48px);
+        max-width: 860px;
+        z-index: 1000;
+        border: 1px solid #27272a !important;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #09090b !important;
+        box-shadow:
+          0 20px 40px -8px rgba(0, 0, 0, 0.75),
+          0 0 0 1px rgba(255, 255, 255, 0.08);
+        animation: floatSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes floatSlideUp {
+        from {
+          opacity: 0;
+          transform: translate(-50%, 16px);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, 0);
+        }
+      }
+
+      .ai-prompt-header {
+        padding: 8px 14px;
+        background: #121215 !important;
+        border-bottom: 1px solid #222226 !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .ai-prompt-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #a1a1aa !important;
+        letter-spacing: 0.02em;
+      }
+
+      .ai-prompt-title svg {
+        width: 13px;
+        height: 13px;
+        color: #f4f4f5 !important;
+      }
+
+      .ai-prompt-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .ai-prompt-fix-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        color: #a1a1aa !important;
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.15s ease;
+      }
+
+      .ai-prompt-fix-label:hover {
+        color: #f4f4f5 !important;
+      }
+
+      .ai-prompt-fix-label input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1.5px solid #3f3f46;
+        background-color: transparent;
+        cursor: pointer;
+        margin: 0;
+        outline: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
+        transition: all 0.15s ease;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .ai-prompt-fix-label:hover input[type="checkbox"] {
+        border-color: #f4f4f5;
+      }
+
+      .ai-prompt-fix-label input[type="checkbox"]:checked {
+        background-color: #ffffff;
+        border-color: #ffffff;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' stroke='%2309090b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='3.5 8.5 6.5 11.5 12.5 5.5'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 9px 9px;
+      }
+
+      .ai-prompt-fix-label input[type="checkbox"]:focus-visible {
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+      }
+
+      .ai-prompt-count {
+        font-size: 10px;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        border-radius: 10px;
+        padding: 1px 7px;
+        letter-spacing: 0.02em;
+      }
+
+      .ai-prompt-copy-btn {
+        background: #ffffff;
+        border: 1px solid #ffffff !important;
+        color: #09090b !important;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s ease;
+        font-family: var(--font-sans);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      .ai-prompt-copy-btn:hover {
+        background: #e4e4e7;
+        border-color: #e4e4e7 !important;
+      }
+
+      .ai-prompt-copy-btn svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      .ai-prompt-pre {
+        margin: 0;
+        padding: 10px 14px;
+        background: #050507 !important;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: #f1f5f9 !important;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 120px;
+        overflow-y: auto;
+      }
+
+      .ai-prompt-pre code {
+        font-family: inherit;
+        color: inherit;
+        background: transparent;
+        padding: 0;
+        border: none;
+      }
+
+      @media (max-width: 640px) {
+        .ai-prompt-box {
+          bottom: 12px;
+          width: calc(100% - 24px);
+        }
+      }
+
+      /* Finding Body */
+      .finding-body {
+        padding: 14px 18px 16px;
+      }
+
+      .rationale-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: 4px;
+        padding: 10px 14px;
+        margin-bottom: 14px;
+      }
+
+      @media (max-width: 768px) {
+        .rationale-panel {
+          grid-template-columns: 1fr;
+        }
+        .finding-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .finding-header-right {
+          align-items: flex-start;
+          width: 100%;
+        }
+      }
+
+      .rationale-block {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .rationale-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .rationale-txt {
+        font-size: 12px;
+        color: var(--text-secondary);
+        line-height: 1.45;
+      }
+
+      .rationale-txt code {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        padding: 1px 4px;
+        border-radius: 3px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        color: inherit;
+      }
+
+      /* Severity-based Impact Title & Description Styling */
+      .finding-card[data-severity="CRITICAL"] .impact-lbl,
+      .finding-card.severity-CRITICAL .impact-lbl,
+      .finding-card[data-severity="CRITICAL"] .rationale-block.impact-block .rationale-lbl,
+      .finding-card[data-severity="CRITICAL"] .rationale-block:nth-child(2) .rationale-lbl {
+        color: var(--sev-crit-text);
+      }
+      .finding-card[data-severity="CRITICAL"] .impact-desc,
+      .finding-card.severity-CRITICAL .impact-desc,
+      .finding-card[data-severity="CRITICAL"] .rationale-block.impact-block .rationale-txt,
+      .finding-card[data-severity="CRITICAL"] .rationale-block:nth-child(2) .rationale-txt {
+        color: var(--sev-crit-text);
+        font-weight: 500;
+      }
+
+      .finding-card[data-severity="HIGH"] .impact-lbl,
+      .finding-card.severity-HIGH .impact-lbl,
+      .finding-card[data-severity="HIGH"] .rationale-block.impact-block .rationale-lbl,
+      .finding-card[data-severity="HIGH"] .rationale-block:nth-child(2) .rationale-lbl {
+        color: var(--sev-high-text);
+      }
+      .finding-card[data-severity="HIGH"] .impact-desc,
+      .finding-card.severity-HIGH .impact-desc,
+      .finding-card[data-severity="HIGH"] .rationale-block.impact-block .rationale-txt,
+      .finding-card[data-severity="HIGH"] .rationale-block:nth-child(2) .rationale-txt {
+        color: var(--sev-high-text);
+        font-weight: 500;
+      }
+
+      .finding-card[data-severity="MEDIUM"] .impact-lbl,
+      .finding-card.severity-MEDIUM .impact-lbl,
+      .finding-card[data-severity="MEDIUM"] .rationale-block.impact-block .rationale-lbl,
+      .finding-card[data-severity="MEDIUM"] .rationale-block:nth-child(2) .rationale-lbl {
+        color: var(--sev-med-text);
+      }
+      .finding-card[data-severity="MEDIUM"] .impact-desc,
+      .finding-card.severity-MEDIUM .impact-desc,
+      .finding-card[data-severity="MEDIUM"] .rationale-block.impact-block .rationale-txt,
+      .finding-card[data-severity="MEDIUM"] .rationale-block:nth-child(2) .rationale-txt {
+        color: var(--sev-med-text);
+        font-weight: 500;
+      }
+
+      .finding-card[data-severity="LOW"] .impact-lbl,
+      .finding-card.severity-LOW .impact-lbl,
+      .finding-card[data-severity="LOW"] .rationale-block.impact-block .rationale-lbl,
+      .finding-card[data-severity="LOW"] .rationale-block:nth-child(2) .rationale-lbl {
+        color: var(--sev-low-text);
+      }
+      .finding-card[data-severity="LOW"] .impact-desc,
+      .finding-card.severity-LOW .impact-desc,
+      .finding-card[data-severity="LOW"] .rationale-block.impact-block .rationale-txt,
+      .finding-card[data-severity="LOW"] .rationale-block:nth-child(2) .rationale-txt {
+        color: var(--sev-low-text);
+        font-weight: 500;
+      }
+
+      /* Side-by-side Code Comparison - ALWAYS DARK THEME */
+      .code-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      @media (max-width: 960px) {
+        .code-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .code-box {
+        border: 1px solid #222226 !important;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #050507 !important;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .code-box-header {
+        padding: 6px 12px;
+        background: #0c0c0e !important;
+        border-bottom: 1px solid #222226 !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        font-weight: 600;
+        color: #a1a1aa !important;
+      }
+
+      .code-box-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .code-box-title.diff {
+        color: #a1a1aa !important;
+      }
+      .code-box-title.fix {
+        color: #a1a1aa !important;
+      }
+
+      .copy-btn {
+        background: transparent;
+        border: 1px solid #2a2a30 !important;
+        color: #a1a1aa !important;
+        border-radius: 3px;
+        padding: 2px 7px;
+        font-size: 10.5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.15s ease;
+        font-family: var(--font-sans);
+      }
+
+      .copy-btn:hover {
+        background: #ffffff !important;
+        color: #09090b !important;
+        border-color: #ffffff !important;
+      }
+
+      .copy-btn.copied,
+      .ai-prompt-copy-btn.copied {
+        background: #22c55e !important;
+        border-color: transparent !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+      }
+
+      .copy-btn svg {
+        width: 11px;
+        height: 11px;
+      }
+
+      /* Code Table with Line Numbers - ALWAYS DARK BLACK */
+      .code-table {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        line-height: 1.5;
+        padding: 6px 0;
+        overflow-x: auto;
+        color: #f4f4f5 !important;
+        background: #050507 !important;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .code-row {
+        display: flex;
+        align-items: stretch;
+        min-width: 100%;
+        padding: 0 4px;
+      }
+
+      .code-row.row-del {
+        background: rgba(239, 68, 68, 0.16) !important;
+        color: #fca5a5 !important;
+      }
+
+      .code-row.row-add {
+        background: rgba(34, 197, 94, 0.16) !important;
+        color: #86efac !important;
+      }
+
+      .cell-ln {
+        width: 38px;
+        flex-shrink: 0;
+        text-align: right;
+        padding-right: 10px;
+        color: #475569 !important;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .cell-ln::before {
+        content: attr(data-ln);
+      }
+
+      .row-del .cell-ln {
+        color: #ef4444 !important;
+      }
+      .row-add .cell-ln {
+        color: #22c55e !important;
+      }
+
+      .cell-marker {
+        width: 14px;
+        flex-shrink: 0;
+        text-align: center;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+        font-weight: 700;
+      }
+
+      .cell-marker::before {
+        content: attr(data-marker);
+      }
+
+      .row-del .cell-marker {
+        color: #ef4444 !important;
+      }
+      .row-add .cell-marker {
+        color: #22c55e !important;
+      }
+
+      .cell-code {
+        white-space: pre;
+        padding-left: 6px;
+        padding-right: 12px;
+        flex-grow: 1;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+      }
+
+      /* Syntax Tokens - ALWAYS DARK THEME HIGHLIGHTING */
+      .code-box .token.keyword {
+        color: #ff7b72 !important;
+        font-weight: 600;
+      }
+      .code-box .token.class-name {
+        color: #79c0ff !important;
+      }
+      .code-box .token.property {
+        color: #d2a8ff !important;
+      }
+      .code-box .token.string {
+        color: #a5d6ff !important;
+      }
+      .code-box .token.char {
+        color: #a5d6ff !important;
+      }
+      .code-box .token.number {
+        color: #ffa657 !important;
+      }
+      .code-box .token.comment {
+        color: #8b949e !important;
+        font-style: italic;
+      }
+      .code-box .token.operator {
+        color: #79c0ff !important;
+      }
+      .code-box .token.punctuation {
+        color: #c9d1d9 !important;
+      }
+      .code-box .token.atrule,
+      .code-box .token.attribute,
+      .code-box .token.attr-name {
+        color: #ffa657 !important;
+      }
+      .code-box .token.tag {
+        color: #7ee787 !important;
+      }
+      .code-box .token.boolean {
+        color: #ffa657 !important;
+        font-weight: 600;
+      }
+      .code-box .token.function {
+        color: #79c0ff !important;
+      }
+      .code-box .token.builtin {
+        color: #ffa657 !important;
+      }
+      .code-box .token.variable {
+        color: #79c0ff !important;
+      }
+
+      footer {
+        margin-top: 40px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      footer a {
+        color: var(--text-main);
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navigation Header with Official AF-Project Logo -->
+    <header>
+      <div class="header-inner">
+        <div class="brand-section">
+          <div class="af-logo-link" title="AF-Project">
+            <svg
+              viewBox="0 0 650 404"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M263.477 0.376465L526.953 404H423.244L263.477 154.538L100.906 404H0L263.477 0.376465Z" fill="currentColor"/>
+              <path d="M215.826 283.474H311.127L364.382 361.956H162.571L215.826 283.474Z" fill="currentColor"/>
+              <path d="M290.754 0H649.53L599.077 78.4824H341.207L290.754 0Z" fill="currentColor"/>
+              <path d="M391.998 154.896H599.416L548.963 233.378H442.451L391.998 154.896Z" fill="currentColor"/>
+            </svg>
+            <span class="af-brand-title">AF-Project</span>
+          </div>
+          <div class="divider-v"></div>
+          <span class="sub-brand-label">Code Review Report</span>
+        </div>
+
+        <div class="nav-actions">
+          <div class="ref-badge" title="Inspected Git Scope / Branch (Never Truncated)">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="6" y1="3" x2="6" y2="15"></line>
+              <circle cx="18" cy="6" r="3"></circle>
+              <circle cx="6" cy="18" r="3"></circle>
+              <path d="M18 9a9 9 0 0 1-9 9"></path>
+            </svg>
+            <!-- Branch name must never be truncated -->
+            <span>{{BRANCH_NAME}}</span>
+          </div>
+
+          <!-- Clean Theme Toggle without Emojis -->
+          <button
+            class="theme-toggle-btn"
+            id="themeToggleBtn"
+            onclick="toggleTheme()"
+            title="Switch Light/Dark mode"
+          >
+            <svg
+              id="themeIcon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <span id="themeLabel">Light</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <!-- Executive Summary Bar -->
+      <section class="exec-summary">
+        <div class="exec-header">
+          <div class="exec-title-group">
+            <h1>{{REVIEW_TITLE}}</h1>
+            <p>{{REVIEW_SUMMARY_NOTE}}</p>
+          </div>
+          <div class="verdict-tag {{VERDICT_CLASS}}">
+            {{VERDICT_SVG_ICON}}
+            <span>{{VERDICT_TITLE}}</span>
+          </div>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-col">
+            <span class="meta-lbl">Target Scope</span>
+            <span class="meta-val" title="{{REVIEW_SCOPE}}"
+              >{{REVIEW_SCOPE}}</span
+            >
+          </div>
+          <div class="meta-col">
+            <span class="meta-lbl">Architecture / Stack</span>
+            <span class="meta-val" title="{{PROJECT_NAME}}"
+              >{{PROJECT_NAME}}</span
+            >
+          </div>
+          <div class="meta-col">
+            <span class="meta-lbl">Timestamp</span>
+            <span class="meta-val">{{REVIEW_DATE}}</span>
+          </div>
+          <div class="meta-col">
+            <span class="meta-lbl">Reviewer</span>
+            <span class="meta-val">{{REVIEWER_NAME}}</span>
+          </div>
+        </div>
+
+        <div class="sev-bar-wrapper">
+          <div class="sev-prog-track">
+            <div class="sev-seg crit" style="width: {{PCT_CRITICAL}}%;"></div>
+            <div class="sev-seg high" style="width: {{PCT_HIGH}}%;"></div>
+            <div class="sev-seg med" style="width: {{PCT_MEDIUM}}%;"></div>
+            <div class="sev-seg low" style="width: {{PCT_LOW}}%;"></div>
+          </div>
+
+          <div class="filter-tabs">
+            <button
+              class="filter-tab active"
+              data-filter="all"
+              onclick="filterFindings('all')"
+            >
+              <span class="tab-dot all"></span>
+              <span>All Findings</span>
+              <span class="tab-count">({{COUNT_TOTAL}})</span>
+            </button>
+            <button
+              class="filter-tab"
+              data-filter="CRITICAL"
+              onclick="filterFindings('CRITICAL')"
+            >
+              <span class="tab-dot crit"></span>
+              <span>Critical</span>
+              <span class="tab-count">({{COUNT_CRITICAL}})</span>
+            </button>
+            <button
+              class="filter-tab"
+              data-filter="HIGH"
+              onclick="filterFindings('HIGH')"
+            >
+              <span class="tab-dot high"></span>
+              <span>High</span>
+              <span class="tab-count">({{COUNT_HIGH}})</span>
+            </button>
+            <button
+              class="filter-tab"
+              data-filter="MEDIUM"
+              onclick="filterFindings('MEDIUM')"
+            >
+              <span class="tab-dot med"></span>
+              <span>Medium</span>
+              <span class="tab-count">({{COUNT_MEDIUM}})</span>
+            </button>
+            <button
+              class="filter-tab"
+              data-filter="LOW"
+              onclick="filterFindings('LOW')"
+            >
+              <span class="tab-dot low"></span>
+              <span>Low</span>
+              <span class="tab-count">({{COUNT_LOW}})</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Findings List -->
+      <div class="findings-header">
+        <div class="findings-header-top">
+          <h2>Inspection Findings</h2>
+        </div>
+      </div>
+
+      <div class="findings-container" id="findingsContainer">
+        <!-- ============================================================== -->
+        <!-- FINDING ITEM TEMPLATE (Repeat for each review finding)         -->
+        <!-- NOTE:                                                          -->
+        <!-- "Current Code (Diff)" must show the git diff between BEFORE    -->
+        <!-- vs AFTER changes (deleted '-' and added '+') from the PR/commit-->
+        <!-- diff, NOT after changes vs fix suggestion.                     -->
+        <!-- "✨ Suggested Fix" contains clean replacement code.             -->
+        <!-- ============================================================== -->
+        <!--
+      <div class="finding-card severity-{{SEVERITY}}" data-severity="{{SEVERITY}}">
+        <div class="finding-header">
+          <div>
+            <div class="finding-meta-row">
+              <span class="finding-number">#{{INDEX}}</span>
+              <span class="badge-sev {{SEVERITY}}">{{SEVERITY}}</span>
+              <span class="badge-cat">{{CATEGORY}}</span>
+              <span class="badge-lang">{{LANGUAGE}}</span>
+            </div>
+            <h3 class="finding-title">{{FINDING_TITLE}}</h3>
+          </div>
+          <div class="finding-header-right">
+            <label class="finding-check-label" title="Toggle finding validity for AI prompt">
+              <span>Valid</span>
+              <input type="checkbox" class="finding-select-check" data-finding="#{{INDEX}}" checked onchange="updateAiPrompt()">
+            </label>
+            <div class="file-ref" title="{{FILE_PATH}}:{{LINE_NUMBER}}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <span>{{FILE_PATH}}:{{LINE_NUMBER}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="finding-body">
+          <div class="rationale-panel">
+            <div class="rationale-block">
+              <span class="rationale-lbl">Reason</span>
+              <span class="rationale-txt">{{REASON_DESCRIPTION}}</span>
+            </div>
+            <div class="rationale-block impact-block">
+              <span class="rationale-lbl impact-lbl">Impact</span>
+              <span class="rationale-txt impact-desc">{{IMPACT_DESCRIPTION}}</span>
+            </div>
+          </div>
+
+          <div class="code-grid">
+            <div class="code-box">
+              <div class="code-box-header">
+                <div class="code-box-title diff">
+                  <span>Current Code (Diff)</span>
+                </div>
+                <span>{{LANGUAGE}}</span>
+              </div>
+              <pre class="raw-code-block" data-lang="{{LANGUAGE_LOWER}}" data-start-line="{{DIFF_START_LINE}}" data-diff="true">{{DIFF_RAW_CONTENT_ESCAPED}}</pre>
+            </div>
+
+            <div class="code-box">
+              <div class="code-box-header">
+                <div class="code-box-title fix">
+                  <span>✨ Suggested Fix</span>
+                </div>
+                <button class="copy-btn" onclick="copyCode(this)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>Copy Code</span>
+                </button>
+              </div>
+              <pre class="raw-code-block" data-lang="{{LANGUAGE_LOWER}}" data-start-line="{{FIX_START_LINE}}" data-diff="false">{{FIX_RAW_CONTENT_ESCAPED}}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+        <!-- ============================================================== -->
+
+        {{FINDINGS_CONTENT}}
+      </div>
+
+      <footer>
+        <span
+          >Generated in accordance with AF-Project Guidelines &bull; Strictly
+          Scoped to Changed Diffs</span
+        >
+        <span>AF-Project</span>
+      </footer>
+    </div>
+
+    <!-- Floating AI Prompt Box for Excluded Findings (Shown when unselected > 0) -->
+    <div class="ai-prompt-box" id="aiPromptBox" style="display: none">
+      <div class="ai-prompt-header">
+        <div class="ai-prompt-title">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+            ></path>
+          </svg>
+          <span>AI Prompt (Excluded Findings)</span>
+          <span class="ai-prompt-count" id="aiPromptCount"></span>
+        </div>
+        <div class="ai-prompt-actions">
+          <label class="ai-prompt-fix-label" title="Also request fixes for remaining findings">
+            <input type="checkbox" id="requestFixCheck" checked onchange="updateAiPrompt()">
+            <span id="requestFixText">Request Fix</span>
+          </label>
+          <button
+            class="ai-prompt-copy-btn"
+            onclick="copyAiPrompt(this)"
+            title="Copy prompt to clipboard"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
+            </svg>
+            <span>Copy Prompt</span>
+          </button>
+        </div>
+      </div>
+      <pre class="ai-prompt-pre"><code id="aiPromptCode"></code></pre>
+    </div>
+
+    <!-- Embedded Prism.js Syntax Highlighter Core + Languages -->
+    <script>
+      var _self =
+          "undefined" != typeof window
+            ? window
+            : "undefined" != typeof WorkerGlobalScope &&
+                self instanceof WorkerGlobalScope
+              ? self
+              : {},
+        Prism = (function (l) {
+          var n = /(?:^|\s)lang(?:uage)?-([\w-]+)(?=\s|$)/i,
+            t = 0,
+            e = {},
+            j = {
+              manual: l.Prism && l.Prism.manual,
+              disableWorkerMessageHandler:
+                l.Prism && l.Prism.disableWorkerMessageHandler,
+              util: {
+                encode: function e(t) {
+                  return t instanceof C
+                    ? new C(t.type, e(t.content), t.alias)
+                    : Array.isArray(t)
+                      ? t.map(e)
+                      : t
+                          .replace(/&/g, "&amp;")
+                          .replace(/</g, "&lt;")
+                          .replace(/\u00a0/g, " ");
+                },
+                type: function (e) {
+                  return Object.prototype.toString.call(e).slice(8, -1);
+                },
+                objId: function (e) {
+                  return (
+                    e.__id || Object.defineProperty(e, "__id", { value: ++t }),
+                    e.__id
+                  );
+                },
+                clone: function n(e, a) {
+                  var r, t;
+                  switch (((a = a || {}), j.util.type(e))) {
+                    case "Object":
+                      if (((t = j.util.objId(e)), a[t])) return a[t];
+                      for (var s in ((r = {}), (a[t] = r), e))
+                        e.hasOwnProperty(s) && (r[s] = n(e[s], a));
+                      return r;
+                    case "Array":
+                      return ((t = j.util.objId(e)), a[t])
+                        ? a[t]
+                        : ((r = []),
+                          (a[t] = r),
+                          e.forEach(function (e, t) {
+                            r[t] = n(e, a);
+                          }),
+                          r);
+                    default:
+                      return e;
+                  }
+                },
+                getLanguage: function (e) {
+                  for (; e; ) {
+                    var t = n.exec(e.className);
+                    if (t) return t[1].toLowerCase();
+                    e = e.parentElement;
+                  }
+                  return "none";
+                },
+                setLanguage: function (e, t) {
+                  ((e.className = e.className.replace(RegExp(n, "gi"), "")),
+                    e.classList.add("language-" + t));
+                },
+                currentScript: function () {
+                  if ("undefined" == typeof document) return null;
+                  if ("currentScript" in document)
+                    return document.currentScript;
+                  try {
+                    throw new Error();
+                  } catch (e) {
+                    var t = (/at [^(\r\n]*\((.*):[^:]+:[^:]+\)$/i.exec(
+                      e.stack,
+                    ) || [])[1];
+                    if (t) {
+                      var n,
+                        a = document.getElementsByTagName("script");
+                      for (n in a) if (a[n].src == t) return a[n];
+                    }
+                    return null;
+                  }
+                },
+                isActive: function (e, t, n) {
+                  for (var a = "no-" + t; e; ) {
+                    var r = e.classList;
+                    if (r.contains(t)) return !0;
+                    if (r.contains(a)) return !1;
+                    e = e.parentElement;
+                  }
+                  return !!n;
+                },
+              },
+              languages: {
+                plain: e,
+                plaintext: e,
+                text: e,
+                txt: e,
+                extend: function (e, t) {
+                  var n,
+                    a = j.util.clone(j.languages[e]);
+                  for (n in t) a[n] = t[n];
+                  return a;
+                },
+                insertBefore: function (n, e, t, a) {
+                  var r,
+                    s = (a = a || j.languages)[n],
+                    i = {};
+                  for (r in s)
+                    if (s.hasOwnProperty(r)) {
+                      if (r == e)
+                        for (var o in t) t.hasOwnProperty(o) && (i[o] = t[o]);
+                      t.hasOwnProperty(r) || (i[r] = s[r]);
+                    }
+                  var l = a[n];
+                  return (
+                    (a[n] = i),
+                    j.languages.DFS(j.languages, function (e, t) {
+                      t === l && e != n && (this[e] = i);
+                    }),
+                    i
+                  );
+                },
+                DFS: function e(t, n, a, r) {
+                  r = r || {};
+                  var s,
+                    i,
+                    o,
+                    l = j.util.objId;
+                  for (s in t)
+                    t.hasOwnProperty(s) &&
+                      (n.call(t, s, t[s], a || s),
+                      (i = t[s]),
+                      "Object" !== (o = j.util.type(i)) || r[l(i)]
+                        ? "Array" !== o ||
+                          r[l(i)] ||
+                          ((r[l(i)] = !0), e(i, n, s, r))
+                        : ((r[l(i)] = !0), e(i, n, null, r)));
+                },
+              },
+              plugins: {},
+              highlightAll: function (e, t) {
+                j.highlightAllUnder(document, e, t);
+              },
+              highlightAllUnder: function (e, t, n) {
+                var a = {
+                  callback: n,
+                  container: e,
+                  selector:
+                    'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code',
+                };
+                j.hooks.run("before-highlightall", a),
+                  (a.elements = Array.prototype.slice.apply(
+                    a.container.querySelectorAll(a.selector),
+                  )),
+                  j.hooks.run("before-all-elements-highlight", a);
+                for (var r, s = 0; (r = a.elements[s++]); )
+                  j.highlightElement(r, !0 === t, a.callback);
+              },
+              highlightElement: function (e, t, n) {
+                var a = j.util.getLanguage(e),
+                  r = j.languages[a];
+                j.util.setLanguage(e, a);
+                var s = e.parentElement;
+                s &&
+                  "pre" === s.nodeName.toLowerCase() &&
+                  j.util.setLanguage(s, a);
+                var i = {
+                  instance: j,
+                  element: e,
+                  language: a,
+                  grammar: r,
+                  code: e.textContent,
+                };
+                function o(e) {
+                  ((i.highlightedCode = e),
+                    j.hooks.run("before-insert", i),
+                    (i.element.innerHTML = i.highlightedCode),
+                    j.hooks.run("after-highlight", i),
+                    j.hooks.run("complete", i),
+                    n && n.call(i.element));
+                }
+                if (
+                  (j.hooks.run("before-sanity-check", i),
+                  (s = i.element.parentElement) &&
+                    "pre" === s.nodeName.toLowerCase() &&
+                    !s.hasAttribute("tabindex") &&
+                    s.setAttribute("tabindex", "0"),
+                  !i.code)
+                )
+                  return (
+                    j.hooks.run("complete", i),
+                    void (n && n.call(i.element))
+                  );
+                if ((j.hooks.run("before-highlight", i), i.grammar))
+                  if (t && l.Worker) {
+                    var l = new Worker(j.filename);
+                    ((l.onmessage = function (e) {
+                      o(e.data);
+                    }),
+                      l.postMessage(
+                        JSON.stringify({
+                          language: i.language,
+                          code: i.code,
+                          immediateClose: !0,
+                        }),
+                      ));
+                  } else o(j.highlight(i.code, i.grammar, i.language));
+                else o(j.util.encode(i.code));
+              },
+              highlight: function (e, t, n) {
+                var a = { instance: j, size: e.length, text: e, language: n, grammar: t };
+                return (
+                  j.hooks.run("before-tokenize", a),
+                  !a.grammar
+                    ? (j.hooks.run("after-tokenize", a), j.util.encode(a.text))
+                    : ((a.tokens = j.tokenize(a.text, a.grammar)),
+                      j.hooks.run("after-tokenize", a),
+                      C.stringify(j.util.encode(a.tokens), a.language))
+                );
+              },
+              tokenize: function (e, t) {
+                var n = t.rest;
+                if (n) {
+                  for (var a in n) t[a] = n[a];
+                  delete t.rest;
+                }
+                var r = new s();
+                return (
+                  u(r, r.head, e),
+                  o(e, r, t, r.head, 0),
+                  (function (e) {
+                    for (var t = [], n = e.head.next; n !== e.tail; )
+                      t.push(n.value), (n = n.next);
+                    return t;
+                  })(r)
+                );
+              },
+              hooks: {
+                all: {},
+                add: function (e, t) {
+                  var n = j.hooks.all;
+                  ((n[e] = n[e] || []), n[e].push(t));
+                },
+                run: function (e, t) {
+                  var n = j.hooks.all[e];
+                  if (n && n.length)
+                    for (var a, r = 0; (a = n[r++]); ) a(t);
+                },
+              },
+              Token: C,
+            };
+          function C(e, t, n, a) {
+            ((this.type = e),
+              (this.content = t),
+              (this.alias = n),
+              (this.length = 0 | (a || "").length));
+          }
+          function s() {
+            var e = { value: null, prev: null, next: null },
+              t = { value: null, prev: e, next: null };
+            ((e.next = t), (this.head = e), (this.tail = t), (this.length = 0));
+          }
+          function u(e, t, n) {
+            var a = t.next,
+              r = { value: n, prev: t, next: a };
+            ((t.next = r), (a.prev = r), e.length++);
+          }
+          function c(e, t, n) {
+            for (var a = t.next, r = 0; r < n && a !== e.tail; r++) a = a.next;
+            (((t.next = a).prev = t), (e.length -= r));
+          }
+          if (
+            ((l.Prism = j),
+            (C.stringify = function t(e, n) {
+              if ("string" == typeof e) return e;
+              if (Array.isArray(e)) {
+                for (var a = "", r = 0; r < e.length; r++) a += t(e[r], n);
+                return a;
+              }
+              var s = {
+                  type: e.type,
+                  content: t(e.content, n),
+                  tag: "span",
+                  classes: ["token", e.type],
+                  attributes: {},
+                  language: n,
+                },
+                i = e.alias;
+              (i &&
+                (Array.isArray(i)
+                  ? Array.prototype.push.apply(s.classes, i)
+                  : s.classes.push(i)),
+                j.hooks.run("wrap", s));
+              var o = "";
+              for (var l in s.attributes)
+                o +=
+                  " " +
+                  l +
+                  '="' +
+                  (s.attributes[l] || "").replace(/"/g, "&quot;") +
+                  '"';
+              return (
+                "<" +
+                s.tag +
+                ' class="' +
+                s.classes.join(" ") +
+                '"' +
+                o +
+                ">" +
+                s.content +
+                "</" +
+                s.tag +
+                ">"
+              );
+            }),
+            !l.document)
+          )
+            return j;
+          function o(e, t, n, a, r, s) {
+            for (var i in n)
+              if (n.hasOwnProperty(i) && n[i]) {
+                var o = n[i];
+                o = Array.isArray(o) ? o : [o];
+                for (var l = 0; l < o.length; ++l) {
+                  if (s && s.cause == i + "," + l) return;
+                  var u = o[l],
+                    c = u.inside,
+                    g = !!u.lookbehind,
+                    d = !!u.greedy,
+                    p = u.alias;
+                  if (d && !u.pattern.global) {
+                    var m = u.pattern.toString().match(/[imsuy]*$/)[0];
+                    u.pattern = RegExp(u.pattern.source, m + "g");
+                  }
+                  for (
+                    var f = u.pattern || u, h = a.next, b = r;
+                    h !== t.tail && !(s && b >= s.reach);
+                    b += h.value.length, h = h.next
+                  ) {
+                    var y = h.value;
+                    if (t.length > e.length) return;
+                    if (!(y instanceof C)) {
+                      var v,
+                        k = 1;
+                      if (d) {
+                        if (!(v = x(f, b, e, g)) || v.index >= e.length) break;
+                        var w = v.index;
+                        var A = v.index + v[0].length,
+                          P = b;
+                        for (P += h.value.length; P <= w; )
+                          ((h = h.next), (P += h.value.length));
+                        if (
+                          ((P -= h.value.length),
+                          (b = P),
+                          h.value instanceof C)
+                        )
+                          continue;
+                        for (
+                          var E = h;
+                          E !== t.tail && (P < A || "string" == typeof E.value);
+                          E = E.next
+                        )
+                          k++, (P += E.value.length);
+                        k--, (y = e.substring(b, P)), (v.index -= b);
+                      } else if (!(v = x(f, 0, y, g))) continue;
+                      w = v.index;
+                      var S = v[0],
+                        O = y.substring(0, w),
+                        L = y.substring(w + S.length),
+                        N = b + y.length;
+                      s && N > s.reach && (s.reach = N);
+                      var _ = h.prev;
+                      (O && ((_ = z(t, _, O)), (b += O.length)),
+                        R(t, _, k),
+                        (h = z(t, _, new C(i, c ? j.tokenize(S, c) : S, p, S))),
+                        L && z(t, h, L),
+                        1 < k &&
+                          o(e, t, n, h.prev, b, {
+                            cause: i + "," + l,
+                            reach: N,
+                          }));
+                    }
+                  }
+                }
+              }
+          }
+          function x(e, t, n, a) {
+            e.lastIndex = t;
+            var r = e.exec(n);
+            if (r && a && r[1]) {
+              var s = r[1].length;
+              ((r.index += s), (r[0] = r[0].slice(s)));
+            }
+            return r;
+          }
+          function z(e, t, n) {
+            var a = t.next,
+              r = { value: n, prev: t, next: a };
+            return ((t.next = r), (a.prev = r), e.length++, r);
+          }
+          function R(e, t, n) {
+            for (var a = t.next, r = 0; r < n && a !== e.tail; r++) a = a.next;
+            (((t.next = a).prev = t), (e.length -= r));
+          }
+          return j;
+        })(_self);
+
+      /* Prism Markup / HTML / XML / SVG */
+      Prism.languages.markup = {
+        comment: { pattern: /<!--(?:(?!<!--)[\s\S])*?-->/, greedy: true },
+        prolog: { pattern: /<\?[\s\S]+?\?>/, greedy: true },
+        doctype: {
+          pattern:
+            /<!DOCTYPE(?:[^>"'[\]]|"[^"]*"|'[^']*')+(?:\[(?:[^<"'\]]|"[^"]*"|'[^']*'|<(?!!--)|<!--(?:[^-]|-(?!->))*-->)*\]\s*)?>/i,
+          greedy: true,
+          inside: {
+            "internal-subset": {
+              pattern: /(^[^\[]*\[)[\s\S]+(?=\]>$)/,
+              lookbehind: true,
+              inside: null,
+            },
+            string: { pattern: /"[^"]*"|'[^']*'/, greedy: true },
+            punctuation: /^<!|>$|[[\]]/,
+            "doctype-tag": /^DOCTYPE/i,
+            name: /[^\s<]+/,
+          },
+        },
+        cdata: { pattern: /<!\[CDATA\[[\s\S]*?\]\]>/i, greedy: true },
+        tag: {
+          pattern:
+            /<\/?(?!\d)[^\s>\/=$<%]+(?:\s(?:\s*[^\s>\/=]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s'">=]+(?=[\s>]))|(?=[\s\/>])))+)?\s*\/?>/,
+          greedy: true,
+          inside: {
+            tag: {
+              pattern: /^<\/?[^\s>\/]+/,
+              inside: { punctuation: /^<\/?/, namespace: /^[^\s>\/:]+:/ },
+            },
+            "special-attr": [],
+            "attr-value": {
+              pattern: /=\s*(?:"[^"]*"|'[^']*'|[^\s'">=]+)/,
+              inside: {
+                punctuation: [{ pattern: /^=/, alias: "attr-equals" }, /["']/],
+              },
+            },
+            punctuation: /\/?>/,
+            "attr-name": {
+              pattern: /[^\s>\/]+/,
+              inside: { namespace: /^[^\s>\/:]+:/ },
+            },
+          },
+        },
+        entity: [
+          { pattern: /&[\da-z]{1,8};/i, alias: "named-entity" },
+          /&#x?[\da-f]{1,8};/i,
+        ],
+      };
+      Prism.languages.html = Prism.languages.markup;
+      Prism.languages.xml = Prism.languages.markup;
+      Prism.languages.svg = Prism.languages.markup;
+      Prism.languages.svelte = Prism.languages.markup;
+
+      /* Prism CSS */
+      Prism.languages.css = {
+        comment: /\/\*[\s\S]*?\*\//,
+        atrule: {
+          pattern: /@[\w-](?:[^;{\s]|\s+(?![\s{]))*(?:;|(?=\s*\{))/,
+          inside: { rule: /^@[\w-]+/ },
+        },
+        url: {
+          pattern:
+            /\burl\((?:[^\s"')]|"[^"]*"|'[^']*')*\)/i,
+          greedy: true,
+        },
+        selector: {
+          pattern: /(?!\s)[^{};}]+(?=\s*\{)/,
+          inside: {
+            "pseudo-element": /:(?:after|before|first-letter|first-line|selection|backdrop|placeholder|marker|spelling-error|grammar-error)/i,
+            "pseudo-class": /:[a-z-]+/i,
+            class: /\.[a-z0-9_-]+/i,
+            id: /#[a-z0-9_-]+/i,
+            attribute: /\[[^\]]+\]/
+          }
+        },
+        string: { pattern: /("|')(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/, greedy: true },
+        property: /(?!\s)[-\w\xA0-\uFFFF]+(?=\s*:)/,
+        important: /!important\b/i,
+        function: /[-a-z0-9]+(?=\()/i,
+        punctuation: /[(){};:,]/
+      };
+
+      /* Prism Clike */
+      Prism.languages.clike = {
+        comment: [
+          { pattern: /(^|[^\\])\/\*[\s\S]*?(?:\*\/|$)/, lookbehind: true, greedy: true },
+          { pattern: /(^|[^\\:])\/\/.*/, lookbehind: true, greedy: true },
+        ],
+        string: { pattern: /(["'])(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/, greedy: true },
+        "class-name": {
+          pattern: /(\b(?:class|interface|extends|implements|trait|instanceof|new)\s+|\bcatch\s+\()[a-z](?:[\w-]|::)*[a-z0-9]/i,
+          lookbehind: true,
+          inside: { punctuation: /::/ },
+        },
+        keyword:
+          /\b(?:if|else|while|do|for|return|in|instanceof|function|new|try|throw|catch|finally|null|break|continue)\b/,
+        boolean: /\b(?:true|false)\b/,
+        function: /\b[a-z_]\w*(?=\()/i,
+        number: /\b0x[\da-f]+\b|(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:e[+-]?\d+)?/i,
+        operator: /[<>]=?|[!=]=?=?|--?|\+\+?|&&?|\|\|?|[?*/~^%]/,
+        punctuation: /[{}[\];(),.:]/,
+      };
+
+      /* Prism JavaScript & TypeScript */
+      Prism.languages.javascript = Prism.languages.extend("clike", {
+        "class-name": [
+          Prism.languages.clike["class-name"],
+          {
+            pattern: /(^|[^$\w\xA0-\uFFFF])(?!\s)[_$A-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\.(?:constructor|prototype))/,
+            lookbehind: true,
+          },
+        ],
+        keyword: [
+          { pattern: /((?:^|\})\s*)catch\b/, lookbehind: true },
+          {
+            pattern:
+              /(^|[^.]|\.\.\.\s*)\b(?:as|assert(?=\s*\{)|async(?=\s*(?:function\b|\(|[$\w\xA0-\uFFFF]|$))|await|break|case|class|const|continue|debugger|default|delete|do|else|enum|export|extends|finally|for|from(?=\s*(?:['"]|$))|function|(?:get|set)(?=\s+(?:[#\[$\w\xA0-\uFFFF]|$))|if|implements|import|in|instanceof|interface|let|new|null|of|package|private|protected|public|return|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield)\b/,
+            lookbehind: true,
+          },
+        ],
+        function:
+          /#?(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*(?:\.\s*(?:apply|bind|call)\s*)?\()/,
+        number: {
+          pattern: RegExp(
+            "(^|[^\\w$])(?:(?:0[xX](?:[0-9a-fA-F_]+)|0[bB](?:[01_]+)|0[oO](?:[0-7_]+)|(?:\\d[\\d_]*(?:\\.[\\d_]*)?|\\.\\d[\\d_]*)(?:[eE][+-]?[\\d_]+)?)[nN]?)(?=[^\\w$]|$)",
+          ),
+          lookbehind: true,
+        },
+        operator:
+          /--|\+\+|\*\*=?|=>|&&=?|\|\|=?|[!=]==|<<=?|>>>?=?|[-+*/%&|^!=<>]=?|\.{3}|\?\?=?|\?\.?|[~:]/,
+      });
+      Prism.languages.js = Prism.languages.javascript;
+      Prism.languages.typescript = Prism.languages.extend("javascript", {
+        "class-name": {
+          pattern:
+            /(\b(?:class|extends|implements|instanceof|interface|new|type)\s+)(?!keyof\b)(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?:\s*<(?:[^<>]|<(?:[^<>]|<[^<>]*>)*>)*>)?/,
+          lookbehind: true,
+          greedy: true,
+        },
+        builtin:
+          /\b(?:string|Function|any|number|boolean|array|symbol|console|Promise|unknown|never|void)\b/,
+      });
+      Prism.languages.ts = Prism.languages.typescript;
+
+      /* Prism Rust */
+      Prism.languages.rust = {
+        comment: [
+          { pattern: /(^|[^\\])\/\*[\s\S]*?(?:\*\/|$)/, lookbehind: true, greedy: true },
+          { pattern: /(^|[^\\:])\/\/.*/, lookbehind: true, greedy: true },
+        ],
+        string: {
+          pattern: /b?"(?:\\.|[^\\"])*"|b?r(#*)"(?:[^"]|"(?!\1))*"\1/,
+          greedy: true,
+        },
+        char: {
+          pattern: /b?'(?:\\(?:x[0-7][0-9a-fA-F]|u\{(?:[0-9a-fA-F]_*){1,6}\}|.)|[^\\'\n\r])'/,
+          greedy: true,
+        },
+        attribute: {
+          pattern: /#!?\[(?:[^\[\]"]|"(?:\\.|[^\\"])*")*\]/,
+          greedy: true,
+          alias: "attr-name",
+        },
+        keyword:
+          /\b(?:as|async|await|break|const|continue|crate|dyn|else|enum|extern|false|fn|for|if|impl|in|let|loop|match|mod|move|mut|pub|ref|return|self|Self|static|struct|super|trait|true|type|union|unsafe|use|where|while)\b/,
+        boolean: /\b(?:false|true)\b/,
+        function: /\b[a-z_]\w*(?=\s*(?:::\s*<|\())/i,
+        number:
+          /\b(?:0x[0-9a-fA-F_]+|0o[0-7_]+|0b[01_]+|(?:[0-9][0-9_]*)(?:\.[0-9_]+)?(?:[eE][+-]?[0-9_]+)?)(?:[iu](?:8|16|32|64|128|size)|f(?:32|64))?\b/,
+        operator: /[-+*\/%!^]=?|=[=>]?|&[&=]?|\|[\|=]?|<<=?|>>=?|[@?]/,
+        punctuation: /[{}[\];(),.:]/,
+      };
+      Prism.languages.rs = Prism.languages.rust;
+
+      /* Prism SQL */
+      Prism.languages.sql = {
+        comment: {
+          pattern: /(^|[^\\])(?:\/\*[\s\S]*?\*\/|(?:--).*)/,
+          lookbehind: true,
+          greedy: true,
+        },
+        variable: [
+          { pattern: /@(?:"[^"]+"|[^\s";]+)/, greedy: true },
+          { pattern: /\$([a-zA-Z]\w*|\d+)/, greedy: true },
+        ],
+        string: {
+          pattern: /(^|[^@\\])'(?:''|\\.|[^\\'])*'/,
+          lookbehind: true,
+          greedy: true,
+        },
+        keyword:
+          /\b(?:SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|AND|OR|NOT|IN|IS|NULL|LIKE|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|ON|ORDER|BY|GROUP|HAVING|LIMIT|OFFSET|CREATE|TABLE|ALTER|DROP|INDEX|VIEW|TRIGGER|DATABASE|SCHEMA|PRIMARY|KEY|FOREIGN|REFERENCES|CHECK|UNIQUE|DEFAULT|CASCADE|SET|INTO|VALUES|CASE|WHEN|THEN|ELSE|END|AS|UNION|ALL|DISTINCT|EXISTS|BETWEEN|CAST|COALESCE|COUNT|SUM|AVG|MIN|MAX|BEGIN|COMMIT|ROLLBACK|TRANSACTION|RETURNING)\b/i,
+        boolean: /\b(?:TRUE|FALSE)\b/i,
+        number: /\b0x[\da-f]+\b|\b\d+(?:\.\d*)?|\B\.\d+\b/i,
+        operator: /[-+*\/=%^~]|&&?|\|\|?|!=?|<(?:=>?|<|>)?|>[>=]?/,
+        punctuation: /[;[\](),.]/,
+      };
+
+      /* Prism JSON */
+      Prism.languages.json = {
+        property: { pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?=\s*:)/, lookbehind: true, greedy: true },
+        string: { pattern: /(^|[^\\])"(?:\\.|[^\\"\r\n])*"(?!\s*:)/, lookbehind: true, greedy: true },
+        comment: { pattern: /\/\/.*|\/\*[\s\S]*?(?:\*\/|$)/, greedy: true },
+        number: /-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i,
+        punctuation: /[{}[\],:]/,
+        operator: /:/,
+        boolean: /\b(?:false|true)\b/,
+        null: { pattern: /\bnull\b/, alias: "keyword" }
+      };
+
+      /* Prism TOML */
+      Prism.languages.toml = {
+        comment: { pattern: /#.*/, greedy: true },
+        table: { pattern: /(^\s*\[\s*(?:\[)?)[^\]]+(?=\]\s*$)/m, lookbehind: true, alias: "class-name" },
+        key: { pattern: /(^\s*)[a-zA-Z0-9_\-\.]+(?=\s*=)/m, lookbehind: true, alias: "attr-name" },
+        string: { pattern: /(["'])(?:\\.|[^\\])*?\1/, greedy: true },
+        number: /\b\d+(?:\.\d+)?\b/,
+        boolean: /\b(?:true|false)\b/,
+        punctuation: /[{}[\]=,.]/
+      };
+
+      /* Prism YAML */
+      Prism.languages.yaml = {
+        comment: { pattern: /#.*/, greedy: true },
+        key: { pattern: /(^\s*)[a-zA-Z0-9_\-]+(?=\s*:)/m, lookbehind: true, alias: "attr-name" },
+        string: { pattern: /(["'])(?:\\.|[^\\])*?\1/, greedy: true },
+        number: /\b\d+(?:\.\d+)?\b/,
+        boolean: /\b(?:true|false|yes|no)\b/i,
+        punctuation: /[:\-?{}[\]]/
+      };
+      Prism.languages.yml = Prism.languages.yaml;
+
+      /* Prism Python */
+      Prism.languages.python = {
+        comment: { pattern: /(^|[^\\])#.*/, lookbehind: true, greedy: true },
+        string: {
+          pattern: /(?:[rub]|rb|br)?(?:"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^\\"\r\n])*"|'(?:\\.|[^\\'\r\n])*')/i,
+          greedy: true
+        },
+        keyword: /\b(?:and|as|assert|async|await|break|case|class|continue|def|del|elif|else|except|exec|finally|for|from|global|if|import|in|is|lambda|match|nonlocal|not|or|pass|print|raise|return|try|while|with|yield)\b/,
+        boolean: /\b(?:True|False|None)\b/,
+        number: /\b-?(?:0[bo])?(?:(?:\d|0x[\da-f])[\da-f_]*\.?[\da-f_]*(?:e[+-]?[\da-f_]+)?j?)\b/i,
+        operator: /[-+%=]=?|!=|\*\*?=?|\/\/?=?|<[<=]?|>[>=]?|[&|^~]/,
+        punctuation: /[{}[\];(),.:]/
+      };
+      Prism.languages.py = Prism.languages.python;
+
+      /* Prism Go */
+      Prism.languages.go = Prism.languages.extend("clike", {
+        keyword: /\b(?:break|case|chan|const|continue|default|defer|else|fallthrough|for|func|go|goto|if|import|interface|map|package|range|return|select|struct|switch|type|var)\b/,
+        builtin: /\b(?:bool|byte|complex(?:64|128)|error|float(?:32|64)|u?int(?:8|16|32|64)?|uintptr|string|rune|append|cap|close|complex|copy|delete|imag|len|make|new|panic|print|println|real|recover)\b/,
+        boolean: /\b(?:true|false|iota|nil)\b/,
+        operator: /[*\/%^!=&|+-]=?|[-+&|]{2}|:?=|\.\.\.|[<>]=?|<<=?|>>=?|<-/
+      });
+
+      /* Prism Bash / Shell */
+      Prism.languages.bash = {
+        comment: { pattern: /(^|[^#])#.*/, lookbehind: true, greedy: true },
+        string: [
+          { pattern: /"(?:[^"\\]|\\.)*"/, greedy: true },
+          { pattern: /'[^']*'/, greedy: true }
+        ],
+        variable: [
+          { pattern: /\$(?:\w+|\{[^}]+\})/, greedy: true },
+          { pattern: /\$[0-9#?$*!@-]/ }
+        ],
+        function: { pattern: /(^|[\s;|&])(?:function\s+)?([a-zA-Z_]\w*)(?=\s*\(\s*\)\s*\{)/ },
+        keyword: /\b(?:if|then|else|elif|fi|for|while|until|do|done|in|case|esac|function|select|return|exit)\b/,
+        boolean: /\b(?:true|false)\b/,
+        operator: /&&|\|\||;;|;&|;;&|[-+*\/=<>!|&]/,
+        punctuation: /[{}[\];(),.:]/
+      };
+      Prism.languages.shell = Prism.languages.bash;
+      Prism.languages.sh = Prism.languages.bash;
+      Prism.languages.zsh = Prism.languages.bash;
+
+      /* Prism C & C++ */
+      Prism.languages.c = Prism.languages.extend("clike", {
+        keyword: /\b(?:_Alignas|_Alignof|_Atomic|_Bool|_Complex|_Generic|_Imaginary|_Noreturn|_Static_assert|_Thread_local|asm|auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|inline|int|long|register|restrict|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while)\b/,
+        operator: />>=?|<<=?|->|([-+&|:])\1|[?:~]|[-+*\/%&|^!=<>]=?/
+      });
+      Prism.languages.cpp = Prism.languages.extend("c", {
+        keyword: /\b(?:alignas|alignof|and|and_eq|asm|auto|bitand|bitor|bool|break|case|catch|char|char16_t|char32_t|char8_t|class|co_await|co_return|co_yield|compl|concept|const|const_cast|consteval|constexpr|constinit|continue|decltype|default|delete|do|double|dynamic_cast|else|enum|explicit|export|extern|false|final|float|for|friend|goto|if|import|inline|int|long|module|mutable|namespace|new|noexcept|not|not_eq|nullptr|operator|or|or_eq|override|private|protected|public|reflexpr|register|reinterpret_cast|requires|return|short|signed|sizeof|static|static_assert|static_cast|struct|switch|synchronized|template|this|thread_local|throw|true|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while|xor|xor_eq)\b/
+      });
+
+      /* Prism Swift */
+      Prism.languages.swift = Prism.languages.extend("clike", {
+        keyword: /\b(?:#available|#colorLiteral|#column|#dsohandle|#else|#elseif|#endif|#error|#file|#fileID|#fileLiteral|#filePath|#function|#if|#imageLiteral|#keyPath|#line|#selector|#sourceLocation|#warning|actor|as|async|associatedtype|autoclosure|await|break|case|catch|class|continue|convenience|default|defer|deinit|didSet|do|dynamic|else|enum|extension|fallthrough|false|fileprivate|final|for|func|get|guard|higherOrder|if|import|in|indirect|infix|init|inout|internal|is|isolated|lazy|left|let|mutating|nil|none|nonisolated|nonmutating|open|operator|optional|override|postfix|precedencegroup|prefix|private|protocol|public|repeat|required|rethrows|return|right|safe|self|Self|set|some|static|struct|subscript|super|switch|throw|throws|true|try|typealias|unowned|var|weak|where|while|willSet)\b/,
+        boolean: /\b(?:false|true|nil)\b/
+      });
+
+      // Theme toggle logic
+      function initTheme() {
+        const saved = localStorage.getItem("af-theme") || "dark";
+        setTheme(saved);
+      }
+
+      function toggleTheme() {
+        const current = document.documentElement.getAttribute("data-theme") || "dark";
+        const next = current === "dark" ? "light" : "dark";
+        setTheme(next);
+      }
+
+      function setTheme(theme) {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("af-theme", theme);
+        const icon = document.getElementById("themeIcon");
+        const label = document.getElementById("themeLabel");
+        if (theme === "light") {
+          if (label) label.textContent = "Dark";
+          if (icon) {
+            icon.innerHTML =
+              '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+          }
+        } else {
+          if (label) label.textContent = "Light";
+          if (icon) {
+            icon.innerHTML =
+              '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+          }
+        }
+      }
+
+      // Filter tabs logic
+      function filterFindings(sev) {
+        document.querySelectorAll(".filter-tab").forEach((tab) => {
+          if (tab.getAttribute("data-filter") === sev) {
+            tab.classList.add("active");
+          } else {
+            tab.classList.remove("active");
+          }
+        });
+
+        const cards = document.querySelectorAll(".finding-card");
+        cards.forEach((card) => {
+          if (sev === "all") {
+            card.style.display = "";
+          } else {
+            const cardSev = card.getAttribute("data-severity");
+            card.style.display = cardSev === sev ? "" : "none";
+          }
+        });
+      }
+
+      // Copy clean fix code to clipboard
+      function copyCode(btn) {
+        const codeBox = btn.closest(".code-box");
+        if (!codeBox) return;
+
+        const cells = codeBox.querySelectorAll(".cell-code");
+        let text = "";
+        cells.forEach((c) => {
+          text += c.textContent + "\n";
+        });
+        text = text.replace(/\n$/, "");
+
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const span = btn.querySelector("span");
+            const original = span ? span.textContent : "Copy Code";
+            if (span) span.textContent = "Copied!";
+            btn.classList.add("copied");
+            btn.style.background = "#22C55E";
+            btn.style.borderColor = "transparent";
+            btn.style.color = "#ffffff";
+            setTimeout(() => {
+              if (span) span.textContent = original;
+              btn.classList.remove("copied");
+              btn.style.background = "";
+              btn.style.borderColor = "";
+              btn.style.color = "";
+            }, 1800);
+          })
+          .catch((err) => {
+            console.error("Copy failed", err);
+          });
+      }
+
+      // Update AI Prompt based on unselected findings
+      function updateAiPrompt() {
+        const checkboxes = document.querySelectorAll(".finding-select-check");
+        const unselected = [];
+
+        checkboxes.forEach((cb) => {
+          const findingCard = cb.closest(".finding-card");
+          if (!cb.checked) {
+            const num = cb.getAttribute("data-finding") || "#?";
+            unselected.push(num);
+            if (findingCard) findingCard.classList.add("is-excluded");
+          } else {
+            if (findingCard) findingCard.classList.remove("is-excluded");
+          }
+        });
+
+        const box = document.getElementById("aiPromptBox");
+        const countSpan = document.getElementById("aiPromptCount");
+        const promptCode = document.getElementById("aiPromptCode");
+
+        if (!box || !countSpan || !promptCode) return;
+
+        if (unselected.length === 0) {
+          box.style.display = "none";
+        } else {
+          box.style.display = "block";
+          countSpan.textContent = `${unselected.length} excluded`;
+
+          const isId =
+            document.documentElement.lang === "id" ||
+            document.documentElement.getAttribute("data-report-lang") === "id";
+          const conj = isId ? " dan " : " and ";
+          const conjOxford = isId ? ", dan " : ", and ";
+
+          let formattedNums = "";
+          if (unselected.length === 1) {
+            formattedNums = unselected[0];
+          } else if (unselected.length === 2) {
+            formattedNums = `${unselected[0]}${conj}${unselected[1]}`;
+          } else {
+            formattedNums = `${unselected.slice(0, -1).join(", ")}${conjOxford}${unselected[unselected.length - 1]}`;
+          }
+          const reqFix = document.getElementById("requestFixCheck");
+          const shouldFix = reqFix ? reqFix.checked : true;
+          const totalFindings = document.querySelectorAll(".finding-card").length;
+          const hasRemaining = unselected.length < totalFindings;
+
+          const fixText = document.getElementById("requestFixText");
+          if (fixText) {
+            fixText.textContent = isId ? "Minta Perbaikan" : "Request Fix";
+          }
+
+          let suffix = "!";
+          if (shouldFix && hasRemaining) {
+            suffix = isId
+              ? ", dan perbaiki temuan yang tersisa!"
+              : ", and fix the remaining findings!";
+          }
+
+          promptCode.textContent = isId
+            ? `Hapus temuan nomor ${formattedNums}${suffix}`
+            : `Remove findings number ${formattedNums}${suffix}`;
+        }
+      }
+
+      // Copy AI Prompt
+      function copyAiPrompt(btn) {
+        const promptCode = document.getElementById("aiPromptCode");
+        if (!promptCode) return;
+        const text = promptCode.textContent;
+        const isId =
+          document.documentElement.lang === "id" ||
+          document.documentElement.getAttribute("data-report-lang") === "id";
+
+        navigator.clipboard.writeText(text).then(() => {
+          const span = btn.querySelector("span");
+          const orig = span ? span.textContent : isId ? "Salin Prompt" : "Copy Prompt";
+          if (span) span.textContent = isId ? "Tersalin!" : "Copied!";
+          btn.classList.add("copied");
+          btn.style.background = "#22C55E";
+          btn.style.borderColor = "transparent";
+          btn.style.color = "#ffffff";
+          setTimeout(() => {
+            if (span) span.textContent = orig;
+            btn.classList.remove("copied");
+            btn.style.background = "";
+            btn.style.borderColor = "";
+            btn.style.color = "";
+          }, 1500);
+        });
+      }
+
+      // Client-side Syntax Highlighter and Line Number Renderer
+      function renderDynamicCodeBlocks() {
+        if (typeof Prism === "undefined") return;
+
+        document.querySelectorAll(".raw-code-block").forEach((block) => {
+          let lang = (block.getAttribute("data-lang") || "text").toLowerCase();
+          if (lang === "rs") lang = "rust";
+          if (lang === "ts") lang = "typescript";
+          if (lang === "js") lang = "javascript";
+          if (lang === "svelte" || lang === "html" || lang === "xml" || lang === "svg") lang = "markup";
+          if (lang === "sh" || lang === "shell" || lang === "zsh") lang = "bash";
+          if (lang === "py") lang = "python";
+          if (lang === "golang") lang = "go";
+          if (lang === "yml") lang = "yaml";
+          if (lang === "c++") lang = "cpp";
+
+          const startLine = parseInt(
+            block.getAttribute("data-start-line") || "1",
+            10,
+          );
+          const isDiff = block.getAttribute("data-diff") === "true";
+          const raw = block.textContent.trim();
+
+          const grammar =
+            Prism.languages[lang] ||
+            Prism.languages.markup ||
+            Prism.languages.clike ||
+            Prism.languages.plain;
+          const lines = raw.split("\n");
+
+          let html = '<div class="code-table">';
+          lines.forEach((line, idx) => {
+            let type = "";
+            let marker = "";
+            let text = line;
+            let ln = startLine + idx;
+
+            if (isDiff) {
+              if (line.startsWith("-")) {
+                type = "del";
+                marker = "-";
+                text = line.substring(1);
+              } else if (line.startsWith("+")) {
+                type = "add";
+                marker = "+";
+                text = line.substring(1);
+              } else if (line.startsWith(" ")) {
+                text = line.substring(1);
+              }
+            }
+
+            const highlighted = Prism.highlight(text, grammar, lang);
+            html +=
+              `<div class="code-row ${type ? "row-" + type : ""}">` +
+              `<span class="cell-ln" data-ln="${ln}"></span>` +
+              (isDiff ? `<span class="cell-marker" data-marker="${marker}"></span>` : "") +
+              `<span class="cell-code">${highlighted || "&nbsp;"}</span>` +
+              `</div>`;
+          });
+          html += "</div>";
+
+          block.outerHTML = html;
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initTheme();
+        renderDynamicCodeBlocks();
+        updateAiPrompt();
+      });
+    </script>
+  </body>
+</html>

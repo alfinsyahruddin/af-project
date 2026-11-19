@@ -15,6 +15,7 @@ Welcome to <Project Name>. This document establishes the core architectural prin
 | `docs/environment.md` | Host vs container ports, default local credentials |
 | `docs/testing.md` | Unit tests, HTTP contract tests, Playwright E2E |
 | `docs/workflow.md` | Contributor workflows, verification checklists, git guidelines |
+| `docs/code-review.md` | Code review checklist, scope ambiguity handling, HTML report standard |
 
 ---
 
