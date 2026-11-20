@@ -14,6 +14,7 @@
     <a href="./skills/af-project/LICENSE"><img src="https://img.shields.io/badge/License-Viewing--Only-blue" alt="License"/></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-1.80+-orange?logo=rust" alt="Rust"/></a>
     <a href="https://svelte.dev/"><img src="https://img.shields.io/badge/Svelte-5_Runes-FF3E00?logo=svelte" alt="Svelte 5"/></a>
+    <a href="https://github.com/zed-industries/gpui-kit"><img src="https://img.shields.io/badge/GPUI_Kit-0.8.0-blueviolet" alt="GPUI Kit"/></a>
 </p>
 
 <br />
@@ -28,6 +29,7 @@ It provides strict architectural invariants, progressive setup workflows, and co
 
 - 🦀 **Backend Architecture**: Layered Rust API (Actix).
 - ⚡ **Frontend Architecture**: SvelteKit 3 (Svelte 5, Bun, Tailwind CSS).
+- 🖥️ **Desktop Architecture**: Native 4-crate Rust + GPUI application (`core`, `app`, `storage`, `desktop`) with cross-platform packaging (macOS DMG, Windows Inno Setup EXE, Linux DEB).
 - 🔒 **Security**: Argon2id password hashing, revocable Redis multi-device session tracking, and JWT auth.
 - 🧪 **Testing**: Rust HTTP contract tests, Vitest unit suites, and zero-egress Playwright E2E browser journeys.
 - 🐳 **Containerized**: Production-ready multi-stage Dockerfiles and healthchecked Docker Compose services.

@@ -44,6 +44,47 @@ bun run format:check
 bun run test:e2e
 ```
 
+### Desktop Quality Gates
+Execute from the desktop workspace repository root:
+
+```sh
+# 1. Format check
+cargo fmt --all --check
+
+# 2. Strict Clippy linting (warnings treated as errors)
+cargo clippy --workspace --all-targets --locked -- -D warnings
+
+# 3. Full workspace test suite
+cargo test --workspace --locked
+```
+
+#### Graduated Desktop Verification Loops
+When modifying specific areas of a desktop application, run focused checks first before the full suite:
+
+- **Loop 1: Fast Domain & Rules Verification**
+  ```sh
+  cargo test --locked -p <app>-core
+  ```
+- **Loop 2: Application Controller & Workflow Verification**
+  ```sh
+  cargo test --locked -p <app>-app
+  ```
+- **Loop 3: Persistence & Recovery Verification**
+  ```sh
+  cargo test --locked -p <app>-storage
+  ```
+- **Loop 4: GPUI In-Process Interaction Verification**
+  ```sh
+  cargo test --locked -p <app>-desktop
+  ```
+- **Loop 5: Packaging Artifact Verification**
+  ```sh
+  # macOS bundle and archive:
+  bash packaging/macos/archive.sh
+  # Linux Debian package:
+  bash packaging/linux/package.sh
+  ```
+
 ---
 
 ## 2. Infrastructure & Docker Operations

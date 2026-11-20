@@ -36,7 +36,25 @@ These conventions define the standard defaults when building a new Rust backend 
 
 ---
 
-## 3. Project Infrastructure Matrix
+## 3. Desktop Stack Matrix
+
+These conventions define the standard defaults when building a native desktop application under the `af-project` guideline:
+
+| Concern | Standard Default | Criteria to Add | Rationale |
+| :--- | :--- | :--- | :--- |
+| **Language & Toolchain** | Rust (2024 edition), pinned 1.97.1 | Core systems runtime across all target OSs | Memory safety, zero-cost abstractions, deterministic domain execution |
+| **UI Framework** | GPUI via `gpui-kit = "=0.8.0"` | Native GPU-accelerated desktop user interface | Fast immediate-mode feel with retained efficiency, high FPS |
+| **Workspace Architecture** | 4-Crate Acyclic (`core`, `app`, `storage`, `desktop`) | Segregating domain logic from UI, state, and persistence | Testable engine without window manager, strict boundary enforcement |
+| **State Ownership** | Single `SessionController` on UI executor | Command dispatch, session state, and monotonic revisions | Prevents race conditions; atomic revisioning |
+| **View State Transport** | Immutable `Arc<Projection>` slices | Passing read-only state projections to GPUI views | Zero lock contention, thread-safe, no deep clones on re-renders |
+| **Persistence & Snapshot** | Versioned JSON, atomic rename coordinator | Single local user profile and preferences persistence | Simple zero-dependency file storage; crash resilience via `.recovery` |
+| **Concurrency & I/O** | Dedicated background storage worker (250ms debouncing) | Serialized file persistence and background calculations | Keeps the main UI executor responsive (60+ FPS) |
+| **Arithmetic Integrity** | Checked integer math (`u32`/`u64`/`u128`) | Domain math, financial accounting, and entity IDs | Strictly eliminates IEEE-754 floating point rounding drift |
+| **Packaging & Distribution** | Native bundles: macOS (.app/DMG), Windows (Inno Setup EXE), Linux (.deb) | Platform-specific installable distribution outputs | Frictionless native installation matching platform user expectations |
+
+---
+
+## 4. Project Infrastructure Matrix
 
 | Concern | Standard Default | Criteria to Add | Rationale |
 | :--- | :--- | :--- | :--- |
@@ -46,7 +64,7 @@ These conventions define the standard defaults when building a new Rust backend 
 
 ---
 
-## 4. Architectural Guardrails: What NOT to Use
+## 5. Architectural Guardrails: What NOT to Use
 
 > [!CAUTION]
 > Avoid introducing the following patterns or libraries:
@@ -55,3 +73,7 @@ These conventions define the standard defaults when building a new Rust backend 
 > - **Do NOT use npm/yarn/pnpm**: Always use `bun` as the project package manager and script runner to maintain lockfile consistency.
 > - **Do NOT embed external calls directly in services**: Always wrap outbound third-party APIs in a `clients/` adapter behind a trait.
 > - **Do NOT use Tailwind `@layer components` for feature or page styling**: Colocate styles directly in Svelte components with utility classes or scoped `<style>` blocks. Keep global `src/app.css` strictly for design tokens, CSS variables, and base resets.
+> - **Do NOT mix GPUI forks or unpin GPUI Kit**: Always use `gpui_kit` re-exports (`gpui-kit = "=0.8.0"`). Do not track upstream Zed `main` independently or mix GPUI dependencies.
+> - **Do NOT perform disk or network I/O on the UI thread**: Desktop UI event handlers and render functions must never perform blocking filesystem or network operations. Always offload persistence to a background worker.
+> - **Do NOT use floating-point numbers for business or financial calculations**: Use checked integer units (e.g. cents, basis points, lots) with `u128` intermediates for calculations. Float is only allowed for layout coordinates and display percentages.
+> - **Do NOT violate 4-crate boundaries**: `core` must never import UI, storage, clocks, or filesystem. `app` must never import GPUI or concrete OS storage. `storage` must never call back into UI views.
